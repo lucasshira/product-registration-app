@@ -1,6 +1,6 @@
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
-import { Search, PlusCircle } from 'lucide-react';
+import { Search, PlusCircle, LucideClipboardX} from 'lucide-react';
 import { Table, TableHead, TableHeader, TableBody, TableCell, TableRow } from "./components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DialogFooter, DialogHeader } from "./components/ui/dialog";
@@ -23,6 +23,7 @@ export function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [productName, setProductName] = useState<string>('');
   const [productPrice, setProductPrice] = useState<string>('');
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const { toast } = useToast();
 
   const formatID = (id: string) => {
@@ -48,6 +49,11 @@ export function App() {
     setProducts(prevProducts => [...prevProducts, newProduct]);
     setProductName('');
     setProductPrice('');
+    setIsModalOpen(false);
+  };
+
+  const handleDeleteItem = (productId: string) => {
+    setProducts(prevProducts => prevProducts.filter(product => product.id !== productId));
   };
 
   return (
@@ -64,7 +70,7 @@ export function App() {
               </Button>
             </form>
 
-            <Dialog>
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
               <DialogTrigger asChild>
                 <Button>
                   <PlusCircle className="w-4 h-4 mr-2" />
@@ -93,7 +99,7 @@ export function App() {
                     <DialogClose asChild>
                       <Button type="submit" variant={"outline"}>Cancelar</Button>
                     </DialogClose>
-                    <Button type="submit">Salvar</Button>
+                    <Button type="submit" onClick={() => setIsModalOpen(false)}>Salvar</Button>
                   </DialogFooter>
                 </form>
               </DialogContent>
@@ -112,7 +118,10 @@ export function App() {
                   <TableRow key={product.id}>
                     <TableCell>{formatID(product.id)}</TableCell>
                     <TableCell>{product.name}</TableCell>
-                    <TableCell>R$: {product.price}</TableCell>
+                    <TableCell className="flex justify-between">
+                      R$: {product.price} 
+                      <LucideClipboardX className="cursor-pointer" onClick={() => handleDeleteItem(product.id)} />
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
