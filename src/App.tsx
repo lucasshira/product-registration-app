@@ -10,8 +10,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "./components/ui/use-toast";
 
 import { v4 as uuidv4 } from 'uuid';
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
 
 interface Product {
   id: string;
@@ -46,15 +45,30 @@ export function App() {
       price: productPrice
     };
 
-    setProducts(prevProducts => [...prevProducts, newProduct]);
+    setProducts(prevProducts => {
+      const updatedProducts = [...prevProducts, newProduct];
+      localStorage.setItem('products', JSON.stringify(updatedProducts));
+      return updatedProducts;
+    });
+
     setProductName('');
     setProductPrice('');
     setIsModalOpen(false);
   };
 
   const handleDeleteItem = (productId: string) => {
-    setProducts(prevProducts => prevProducts.filter(product => product.id !== productId));
+    setProducts(prevProducts => prevProducts.filter(product => productId !== product.id));
+    const updatedProducts = products.filter(product => product.id !== productId);
+
+    localStorage.setItem('products', JSON.stringify(updatedProducts));
   };
+
+  useEffect(() => {
+    const savedProducts = localStorage.getItem('products');
+    if (savedProducts) {
+      setProducts(JSON.parse(savedProducts));
+    }
+  }, []);
 
   return (
       <div className="p-6 max-w-4xl mx-auto space-y-4">
@@ -119,13 +133,13 @@ export function App() {
                     <TableCell>{formatID(product.id)}</TableCell>
                     <TableCell>{product.name}</TableCell>
                     <TableCell className="flex justify-between">
-                      R$: {product.price} 
+                      R$: {product.price}
                       <LucideClipboardX className="cursor-pointer" onClick={() => handleDeleteItem(product.id)} />
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
-        </Table>
+          </Table>
         <Toaster />
       </div>
     </div>
