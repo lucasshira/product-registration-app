@@ -1,6 +1,6 @@
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
-import { Search, PlusCircle, LucideClipboardX} from 'lucide-react';
+import { Search, PlusCircle, LucideClipboardX } from 'lucide-react';
 import { Table, TableHead, TableHeader, TableBody, TableCell, TableRow } from "./components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DialogFooter, DialogHeader } from "./components/ui/dialog";
@@ -63,6 +63,7 @@ export function App() {
 
   const handleDeleteItem = (productId: string) => {
     setProducts(prevProducts => prevProducts.filter(product => productId !== product.id));
+    setFilteredProducts(prevFilteredProducts => prevFilteredProducts.filter(product => productId !== product.id))
     const updatedProducts = products.filter(product => product.id !== productId);
 
     localStorage.setItem('products', JSON.stringify(updatedProducts));
@@ -109,7 +110,7 @@ export function App() {
 
   return (
       <div className="p-6 max-w-4xl mx-auto space-y-4">
-        <h1 className="text-3xl font-bold">Produtos</h1>
+        <a href={'/'} className="text-3xl font-bold">Produtos</a>
 
           <div className="flex items-center justify-between">
             <form className="flex items-center gap-2">
@@ -150,7 +151,7 @@ export function App() {
                     <DialogClose asChild>
                       <Button type="submit" variant={"outline"}>Cancelar</Button>
                     </DialogClose>
-                    <Button type="submit" onClick={() => setIsModalOpen(false)}>Salvar</Button>
+                    <Button type="submit" onClick={() => setIsModalOpen(true)}>Salvar</Button>
                   </DialogFooter>
                 </form>
               </DialogContent>
