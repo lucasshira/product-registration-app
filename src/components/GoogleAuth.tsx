@@ -1,4 +1,4 @@
-import { GoogleOAuthProvider, GoogleLogin, googleLogout } from '@react-oauth/google';
+import { GoogleLogin, googleLogout } from '@react-oauth/google';
 import { useState } from 'react';
 
 interface GoogleUserData {
@@ -25,12 +25,11 @@ const GoogleAuth = () => {
   const handleLogout = () => {
     setIsLoggedIn(false);
     googleLogout();
-    setUserData(null); // Limpa os dados do usuário ao fazer logout
+    setUserData(null);
   }
 
   return (
     <div>
-      <GoogleOAuthProvider clientId="305531398488-tanqn5os6nurkrst828gpeh2poio1jl4.apps.googleusercontent.com">
         {isLoggedIn ? (
           <div>
             <button onClick={handleLogout}>Logout</button>
@@ -48,7 +47,6 @@ const GoogleAuth = () => {
             onError={() => {}}
           />
         )}
-      </GoogleOAuthProvider>
     </div>
   );
 };

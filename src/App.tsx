@@ -12,7 +12,8 @@ import { useToast } from "./components/ui/use-toast";
 import { v4 as uuidv4 } from 'uuid';
 import { useState, useEffect, ChangeEvent } from 'react';
 import NenhumProduto from "./components/NenhumProduto";
-import GoogleAuth from "./components/GoogleAuth";
+// import GoogleAuth from "./components/GoogleAuth";
+import GoogleLoginAuth from "./components/GoogleLoginAuth";
 
 interface Product {
   id: string;
@@ -110,11 +111,11 @@ export function App() {
   }, []);
 
   return (
-      <div className="p-6 max-w-4xl mx-auto space-y-4">
-        <a href={'/'} className="text-3xl font-bold">Produtos</a>
+    <div className="p-6 max-w-4xl mx-auto space-y-4">
 
-        <div>
-          <GoogleAuth />
+        <div className="flex flex-row-reverse justify-between">
+          <GoogleLoginAuth />
+          <a href={'/'} className="text-3xl font-bold">Produtos</a>
         </div>
 
           <div className="flex items-center justify-between">
