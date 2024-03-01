@@ -12,6 +12,7 @@ import { useToast } from "./components/ui/use-toast";
 import { v4 as uuidv4 } from 'uuid';
 import { useState, useEffect, ChangeEvent } from 'react';
 import NenhumProduto from "./components/NenhumProduto";
+import GoogleAuth from "./components/GoogleAuth";
 
 interface Product {
   id: string;
@@ -112,6 +113,10 @@ export function App() {
       <div className="p-6 max-w-4xl mx-auto space-y-4">
         <a href={'/'} className="text-3xl font-bold">Produtos</a>
 
+        <div>
+          <GoogleAuth />
+        </div>
+
           <div className="flex items-center justify-between">
             <form className="flex items-center gap-2">
               <Input type="id" placeholder="ID do pedido" onChange={handleChangeId} />
@@ -195,7 +200,7 @@ export function App() {
                   ))
                 )
               )}
-            </TableBody>  
+            </TableBody>
           </Table>
         <Toaster />
       </div>
