@@ -1,10 +1,12 @@
 // import { GoogleLogin } from '@react-oauth/google';
 // import { jwtDecode } from "jwt-decode";
 
-import { Button } from "@/components/ui/button"
-import { useGoogleLogin } from '@react-oauth/google';
 import axios from "axios";
 import { useState } from "react";
+
+import { Button } from "@/components/ui/button"
+
+import { useGoogleLogin, googleLogout } from '@react-oauth/google';
 
 interface UserInfo {
   given_name: string;
@@ -40,17 +42,29 @@ const GoogleLoginAuth = () => {
     },
   });
 
+  const logout = () => {
+    googleLogout();
+    setIsLoggedIn(false);
+    setUserInfo(null);
+  }
+
   return (
     <>
-      {isLoggedIn && userInfo && (
-        <div>
-          <p>{userInfo.given_name} {userInfo.family_name}</p>
-          <img src={userInfo.picture} alt="Profile" />
+      {isLoggedIn && userInfo ? (
+        <div className="flex items-center">
+          <img src={userInfo.picture} alt="Profile" className="rounded-full size-8" />
+          <p className="font-medium mx-2">{userInfo.given_name} {userInfo.family_name}</p>
+          <Button variant="secondary" onClick={() => logout()}>
+            Logout
+          </Button>
+        </div>
+      ) : (
+        <div className="py-2">
+          <Button variant="outline" onClick={() => login()}>
+            Sign in with Google 🚀
+          </Button>
         </div>
       )}
-      <Button variant="outline" onClick={() => login()}>
-        Sign in with Google 🚀
-      </Button>
     </>
   );
 }

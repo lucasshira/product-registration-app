@@ -3,6 +3,7 @@ import { Input } from "./components/ui/input";
 import { Search, PlusCircle, LucideClipboardX } from 'lucide-react';
 import { Table, TableHead, TableHeader, TableBody, TableCell, TableRow } from "./components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator"
 import { DialogFooter, DialogHeader } from "./components/ui/dialog";
 import { Label } from "@radix-ui/react-label";
 import { DialogClose } from "@radix-ui/react-dialog";
@@ -115,8 +116,9 @@ export function App() {
 
         <div className="flex flex-row-reverse justify-between">
           <GoogleLoginAuth />
-          <a href={'/'} className="text-3xl font-bold">Produtos</a>
+          <a href={'/'} className="text-4xl font-bold">Produtos</a>
         </div>
+        <Separator />
 
           <div className="flex items-center justify-between">
             <form className="flex items-center gap-2">
