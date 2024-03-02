@@ -11,6 +11,7 @@ import { useGoogleLogin, googleLogout } from '@react-oauth/google';
 interface UserInfo {
   given_name: string;
   family_name: string;
+  email: string,
   picture: string;
 }
 
@@ -31,16 +32,28 @@ const GoogleLoginAuth = () => {
         );
         console.log(res);
 
-        const { given_name, family_name, picture } = res.data;
+        const { given_name, family_name, picture, email } = res.data;
 
-        setUserInfo({ given_name, family_name, picture });
+        setUserInfo({ given_name, family_name, picture, email });
         setIsLoggedIn(true);
 
+        await createUser({ given_name, family_name, picture, email });
       } catch (err) {
         console.log(err);
       }
     },
   });
+
+  const createUser = async (userInfo: any) => {
+    try {
+      const response = await axios.post("http://localhost:3000/api/users", userInfo);
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao criar usuário:', error);
+      throw error;
+    }
+  };
 
   const logout = () => {
     googleLogout();
