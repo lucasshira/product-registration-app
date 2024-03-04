@@ -46,11 +46,23 @@ const GoogleLoginAuth = () => {
 
   const createUser = async (userInfo: any) => {
     try {
-      const response = await axios.post("http://localhost:3000/api/users", userInfo);
-      console.log(response.data);
-      return response.data;
+      const emailExistsResponse = await axios.get("http://localhost:3000/api/users");
+      const existingUsers = emailExistsResponse.data;
+  
+      const existingUser = existingUsers.find((user: any) => user.email === userInfo.email);
+  
+      if (existingUser) {
+        setUserInfo(existingUser);
+        setIsLoggedIn(true);
+        console.log("Usuário já existe:", existingUser);
+        return existingUser;
+      } else {
+        const response = await axios.post("http://localhost:3000/api/users", userInfo);
+        console.log("Novo usuário criado:", response.data);
+        return response.data;
+      }
     } catch (error) {
-      console.error('Erro ao criar usuário:', error);
+      console.error('Erro ao criar/verificar usuário:', error);
       throw error;
     }
   };
