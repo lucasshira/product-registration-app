@@ -10,9 +10,9 @@ import { useGoogleLogin, googleLogout } from '@react-oauth/google';
 
 interface UserInfo {
   given_name: string;
-  family_name: string;
+  family_name?: string;
   email: string,
-  picture: string;
+  picture?: string;
 }
 
 const GoogleLoginAuth = () => {

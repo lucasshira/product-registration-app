@@ -38,8 +38,8 @@ app.get('/api/users', async (req, res) => {
 
 app.post('/api/users', async (req, res) => {
   try {
-    const { googleId, given_name, family_name, email, picture } = req.body;
-    const user = new UserModel({ googleId, given_name, family_name, email, picture });
+    const { given_name, family_name, email, picture } = req.body;
+    const user = new UserModel({ given_name, family_name, email, picture });
     await user.save();
     res.status(201).json(user);
   } catch (error) {
