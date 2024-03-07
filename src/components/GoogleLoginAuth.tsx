@@ -15,7 +15,7 @@ interface UserInfo {
   picture?: string;
 }
 
-const GoogleLoginAuth = () => {
+const GoogleLoginAuth = ({ setUserId }: { setUserId: (userId: string) => void }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
@@ -55,10 +55,12 @@ const GoogleLoginAuth = () => {
         setUserInfo(existingUser);
         setIsLoggedIn(true);
         console.log("Usuário já existe:", existingUser);
+        setUserId(existingUser._id);
         return existingUser;
       } else {
         const response = await axios.post("http://localhost:3000/api/users", userInfo);
         console.log("Novo usuário criado:", response.data);
+        setUserId(response.data._id);
         return response.data;
       }
     } catch (error) {

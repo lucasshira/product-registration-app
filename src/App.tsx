@@ -9,12 +9,14 @@ import { Label } from "@radix-ui/react-label";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "./components/ui/use-toast";
+import axios from 'axios';
 
-import { v4 as uuidv4 } from 'uuid';
-import { useState, useEffect, ChangeEvent } from 'react';
+// import { v4 as uuidv4 } from 'uuid';
+import { useState, ChangeEvent } from 'react';
 import NenhumProduto from "./components/NenhumProduto";
 // import GoogleAuth from "./components/GoogleAuth";
 import GoogleLoginAuth from "./components/GoogleLoginAuth";
+import Products from "./components/Products";
 
 interface Product {
   id: string;
@@ -30,70 +32,71 @@ export function App() {
   const [id, setId] = useState<string>('');
   const [nome, setNome] = useState<string>('');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const { toast } = useToast();
 
-  const formatID = (id: string) => {
-    return id.substr(0, 8);
+  const formatID = (id: string | undefined) => {
+    if (id) {
+      return id.substr(0, 8);
+    }
+    return "";
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!productName || !productPrice) {
-      toast({
-        description: "Preencha todos os campos para prosseguir",
-      })
+    
+    if (!userId) {
+      console.error('ID do usuário não encontrado');
       return;
     }
-
-    const newProduct: Product = {
-      id: uuidv4(),
-      name: productName,
-      price: productPrice
-    };
-
-    setProducts(prevProducts => {
-      const updatedProducts = [...prevProducts, newProduct];
-      localStorage.setItem('products', JSON.stringify(updatedProducts));
-      return updatedProducts;
-    });
-
-    setProductName('');
-    setProductPrice('');
-    setIsModalOpen(false);
+  
+    try {
+      // Chamada para adicionar um novo produto
+      const response = await axios.post("http://localhost:3000/api/products", { name: productName, price: productPrice, userId });
+      console.log("Novo produto criado:", response.data);
+  
+      // Atualize a lista de produtos após adicionar um novo produto
+      const updatedProducts = [...products, response.data];
+      setProducts(updatedProducts);
+  
+      // Limpar os campos do formulário após a criação do produto
+      setProductName('');
+      setProductPrice('');
+    } catch (error) {
+      console.error('Erro ao criar o produto:', error);
+    }
   };
 
-  const handleDeleteItem = (productId: string) => {
-    setProducts(prevProducts => prevProducts.filter(product => productId !== product.id));
-    setFilteredProducts(prevFilteredProducts => prevFilteredProducts.filter(product => productId !== product.id))
-    const updatedProducts = products.filter(product => product.id !== productId);
-
-    localStorage.setItem('products', JSON.stringify(updatedProducts));
+  const handleDeleteItem = async (productId: string) => {
+    try {
+      // Chamada para excluir o produto pelo ID
+      await axios.delete(`http://localhost:3000/api/products/${productId}`);
+  
+      // Atualize a lista de produtos após a exclusão do produto
+      const updatedProducts = products.filter(product => product.id !== productId);
+      setProducts(updatedProducts);
+      setFilteredProducts(updatedProducts); // Se necessário, atualize também os produtos filtrados
+    } catch (error) {
+      console.error('Erro ao excluir o produto:', error);
+    }
   };
 
-  const handleFilterProducts = () => {
+  const handleFilterProducts = async () => {
     if (!id && !nome) {
       toast({
-        description: "ID e/ou nome de produto nao encontrado(s)",
-      })
+        description: "ID e/ou nome de produto não encontrado(s)",
+      });
       return;
     }
-
-    const filtered = products.filter(product => {
-      const idMatch = id ? product.id.includes(id) : true;
-      const nomeMatch = nome ? product.name.toLocaleLowerCase().includes(nome.toLocaleLowerCase()) : true;
-
-      return idMatch && nomeMatch;
-    });
-
-    if (filtered.length === 0) {
-      toast({
-        description: "Nenhum produto encontrado com os critérios de busca informados"
-      });
+  
+    try {
+      // Chamada para filtrar produtos pelo ID e/ou nome
+      const response = await axios.get(`http://localhost:3000/api/products?name=${nome}&id=${id}`);
+      setFilteredProducts(response.data);
+    } catch (error) {
+      console.error('Erro ao filtrar os produtos:', error);
     }
-
-    setFilteredProducts(filtered);
   };
 
   const handleChangeId = (e: ChangeEvent<HTMLInputElement>) => {
@@ -104,18 +107,17 @@ export function App() {
     setNome(e.target.value);
   };
 
-  useEffect(() => {
-    const savedProducts = localStorage.getItem('products');
-    if (savedProducts) {
-      setProducts(JSON.parse(savedProducts));
-    }
-  }, []);
+  // useEffect(() => {
+  //   // Não será mais necessário recuperar produtos do localStorage
+  //   // A lista de produtos será obtida diretamente do MongoDB
+  //   // Você pode adicionar uma chamada para a API aqui, se necessário
+  // }, []);
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-4">
 
         <div className="flex flex-row-reverse justify-between">
-          <GoogleLoginAuth />
+          <GoogleLoginAuth setUserId={setUserId} />
           <a href={'/'} className="text-4xl font-bold">Produtos</a>
         </div>
         <Separator />
@@ -187,6 +189,7 @@ export function App() {
                       <TableCell className="flex justify-between">
                         R$: {product.price}
                         <LucideClipboardX className="cursor-pointer" onClick={() => handleDeleteItem(product.id)} />
+                        <Products key={product.id} userId={userId} />
                       </TableCell>
                     </TableRow>
                   ))

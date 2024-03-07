@@ -58,10 +58,21 @@ app.get('/api/products', async (req, res) => {
 
 app.post('/api/products', async (req, res) => {
   const { name, price } = req.body;
+  const userId = req.user._id; // Supondo que o ID do usuário logado está na propriedade req.user._id
 
   try {
-    const product = new ProductModel({ name, price });
+    // Verifique se o usuário existe
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Crie o novo produto associado ao usuário
+    const product = new ProductModel({ name, price, user: userId });
+
+    // Salve o produto no banco de dados
     await product.save();
+
     res.status(201).json(product);
   } catch (error) {
     res.status(400).json({ message: error.message });
