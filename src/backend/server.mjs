@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, '../App.tsx')));
 
 mongoose.connect('mongodb+srv://Lucas:sEnoc6rpQgH5xhdg@productsdatabase.zooepn0.mongodb.net/?retryWrites=true&w=majority&appName=ProductsDataBase', { 
-  useNewUrlParser: true, 
+  useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => {
   console.log("Conectado ao MongoDB");
@@ -58,19 +58,22 @@ app.get('/api/products', async (req, res) => {
 
 app.post('/api/products', async (req, res) => {
   const { name, price } = req.body;
-  const userId = req.user._id; // Supondo que o ID do usuário logado está na propriedade req.user._id
+  const userEmail = req.body.email; // Obtenha o email do usuário da requisição
 
   try {
-    // Verifique se o usuário existe
-    const user = await UserModel.findById(userId);
+    // Verifique se o nome e o preço do produto estão presentes na requisição
+    if (!name || !price) {
+      return res.status(400).json({ error: 'Name and price are required' });
+    }
+
+    // Verifique se o usuário existe no banco de dados usando o email
+    const user = await UserModel.findOne({ email: userEmail });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Crie o novo produto associado ao usuário
-    const product = new ProductModel({ name, price, user: userId });
-
-    // Salve o produto no banco de dados
+    // Crie o produto associado ao usuário com base nos dados recebidos na requisição
+    const product = new ProductModel({ name, price, user: user._id });
     await product.save();
 
     res.status(201).json(product);
