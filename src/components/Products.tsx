@@ -124,7 +124,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   const handleChangeNome = (e: ChangeEvent<HTMLInputElement>) => {
     setNome(e.target.value);
   };
-  
+
   useEffect(() => {
     const fetchProducts = async () => {
       if (userSub) {
@@ -219,7 +219,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                   filteredProducts.length > 0 ? (
                     filteredProducts.map(product => (
                       <TableRow key={product.productId}>
-                        {/* <TableCell>{formatID(product.id)}</TableCell> */}
+                        <TableCell>{product.productId.slice(0, 8)}</TableCell>
                         <TableCell>{product.name}</TableCell>
                         <TableCell className="flex justify-between">
                           R$: {product.price}
@@ -230,7 +230,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                   ) : (
                   products.map(product => (
                     <TableRow key={product.productId}>
-                      {/* <TableCell>{formatID(product.id)}</TableCell> */}
+                        <TableCell>{product.productId.slice(0, 8)}</TableCell>
                       <TableCell>{product.name}</TableCell>
                       <TableCell className="flex justify-between">
                         R$: {product.price}
