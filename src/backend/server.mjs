@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
+import { v4 as uuidv4 } from 'uuid';
 
 import ProductModel from './models/ProductModel.js';
 import UserModel from './models/UserModel.js';
@@ -38,8 +39,8 @@ app.get('/api/users', async (req, res) => {
 
 app.post('/api/users', async (req, res) => {
   try {
-    const { given_name, family_name, email, picture } = req.body;
-    const user = new UserModel({ given_name, family_name, email, picture });
+    const { given_name, family_name, email, picture, sub } = req.body;
+    const user = new UserModel({ given_name, family_name, email, picture, sub });
     await user.save();
     res.status(201).json(user);
   } catch (error) {
@@ -57,23 +58,25 @@ app.get('/api/products', async (req, res) => {
 });
 
 app.post('/api/products', async (req, res) => {
-  const { name, price } = req.body;
-  const userEmail = req.body.email; // Obtenha o email do usuário da requisição
+  const { name, price, sub } = req.body;
+  const userSub = req.body.sub;
 
   try {
     // Verifique se o nome e o preço do produto estão presentes na requisição
-    if (!name || !price) {
-      return res.status(400).json({ error: 'Name and price are required' });
+    if (!name || !price || !sub) {
+      return res.status(400).json({ error: 'Name, price and sub are required' });
     }
 
     // Verifique se o usuário existe no banco de dados usando o email
-    const user = await UserModel.findOne({ email: userEmail });
+    const user = await UserModel.findOne({ sub });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    const productId = uuidv4();
+
     // Crie o produto associado ao usuário com base nos dados recebidos na requisição
-    const product = new ProductModel({ name, price, user: user._id });
+    const product = new ProductModel({ productId, name, price, user: user.sub });
     await product.save();
 
     res.status(201).json(product);

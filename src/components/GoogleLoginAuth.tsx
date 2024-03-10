@@ -13,9 +13,10 @@ interface UserInfo {
   family_name?: string;
   email: string,
   picture?: string;
+  sub: string;
 }
 
-const GoogleLoginAuth = ({ setUserId, setUserEmail }: { setUserId: (userId: string) => void, setUserEmail: (email: string) => void }) => {
+const GoogleLoginAuth = ({ setUserSub }: { setUserSub: (sub: string) => void }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
@@ -32,12 +33,12 @@ const GoogleLoginAuth = ({ setUserId, setUserEmail }: { setUserId: (userId: stri
         );
         console.log(res);
 
-        const { given_name, family_name, picture, email } = res.data;
+        const { given_name, family_name, picture, email, sub } = res.data;
 
-        setUserInfo({ given_name, family_name, picture, email });
+        setUserInfo({ given_name, family_name, picture, email, sub });
         setIsLoggedIn(true);
 
-        await createUser({ given_name, family_name, picture, email });
+        await createUser({ given_name, family_name, picture, email, sub });
       } catch (err) {
         console.log(err);
       }
@@ -49,20 +50,18 @@ const GoogleLoginAuth = ({ setUserId, setUserEmail }: { setUserId: (userId: stri
       const emailExistsResponse = await axios.get("http://localhost:3000/api/users");
       const existingUsers = emailExistsResponse.data;
   
-      const existingUser = existingUsers.find((user: any) => user.email === userInfo.email);
+      const existingUser = existingUsers.find((user: any) => user.sub === userInfo.sub);
   
       if (existingUser) {
         setUserInfo(existingUser);
         setIsLoggedIn(true);
         console.log("Usuário já existe:", existingUser);
-        setUserId(existingUser._id);
-        setUserEmail(existingUser.email);
+        setUserSub(existingUser.sub); 
         return existingUser;
       } else {
         const response = await axios.post("http://localhost:3000/api/users", userInfo);
         console.log("Novo usuário criado:", response.data);
-        setUserId(response.data._id);
-        setUserEmail(response.data.email);
+        setUserSub(response.data.sub); 
         return response.data;
       }
     } catch (error) {

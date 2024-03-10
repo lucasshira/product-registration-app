@@ -16,19 +16,19 @@ import { useToast } from "../components/ui/use-toast";
 import NenhumProduto from "../components/NenhumProduto";
 
 interface Products {
-  id: string
+  productId: string
   name: string
   price: number
 }
 
-const Products = ({ userEmail }: { userId: string | null, userEmail: string | null }) => {
+const Products = ({ userSub }: { userSub: string | null }) => {
   // const [name, setName] = useState('');
   // const [price, setPrice] = useState('');
   const [products, setProducts] = useState<Products[]>([]);
   const [productName, setProductName] = useState<string>('');
   const [productPrice, setProductPrice] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [id, setId] = useState<string>('');
+  const [productId, setProductId] = useState<string>('');
   const [nome, setNome] = useState<string>('');
   const [filteredProducts, setFilteredProducts] = useState<Products[]>([]);
 
@@ -62,17 +62,17 @@ const Products = ({ userEmail }: { userId: string | null, userEmail: string | nu
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(userEmail);
+    console.log(userSub);
     // id vindo corretamente
     
-    if (!userEmail) {
-      console.error('E-mail do usuário não encontrado');
+    if (!userSub) {
+      console.error('Sub do usuário não encontrado');
       return;
     }
   
     try {
       // Chamada para adicionar um novo produto
-      const response = await axios.post("http://localhost:3000/api/products", { name: productName, price: productPrice, email: userEmail });
+      const response = await axios.post("http://localhost:3000/api/products", { name: productName, price: productPrice, sub: userSub });
       console.log("Novo produto criado:", response.data);
 
       // Atualize a lista de produtos após adicionar um novo produto
@@ -92,7 +92,7 @@ const Products = ({ userEmail }: { userId: string | null, userEmail: string | nu
       await axios.delete(`http://localhost:3000/api/products/${productId}`);
   
       // Atualize a lista de produtos após a exclusão do produto
-      const updatedProducts = products.filter(product => product.id !== productId);
+      const updatedProducts = products.filter(product => product.productId !== productId);
       setProducts(updatedProducts);
       setFilteredProducts(updatedProducts); // Se necessário, atualize também os produtos filtrados
     } catch (error) {
@@ -101,7 +101,7 @@ const Products = ({ userEmail }: { userId: string | null, userEmail: string | nu
   };
 
   const handleFilterProducts = async () => {
-    if (!id && !nome) {
+    if (!productId && !nome) {
       toast({
         description: "ID e/ou nome de produto não encontrado(s)",
       });
@@ -110,7 +110,7 @@ const Products = ({ userEmail }: { userId: string | null, userEmail: string | nu
   
     try {
       // Chamada para filtrar produtos pelo ID e/ou nome
-      const response = await axios.get(`http://localhost:3000/api/products?name=${nome}&id=${id}`);
+      const response = await axios.get(`http://localhost:3000/api/products?name=${nome}&id=${productId}`);
       setFilteredProducts(response.data);
     } catch (error) {
       console.error('Erro ao filtrar os produtos:', error);
@@ -118,7 +118,7 @@ const Products = ({ userEmail }: { userId: string | null, userEmail: string | nu
   };
 
   const handleChangeId = (e: ChangeEvent<HTMLInputElement>) => {
-    setId(e.target.value);
+    setProductId(e.target.value);
   };
 
   const handleChangeNome = (e: ChangeEvent<HTMLInputElement>) => {
@@ -127,10 +127,10 @@ const Products = ({ userEmail }: { userId: string | null, userEmail: string | nu
 
   useEffect(() => {
     const fetchProducts = async () => {
-      if (userEmail) {
+      if (userSub) {
         try {
           const response = await axios.get(`http://localhost:3000/api/products/`);
-          const responseData: Products[] = response.data; // Acessando os dados da resposta
+          const responseData: Products[] = response.data;
   
           setProducts(responseData);
         } catch (error) {
@@ -141,7 +141,7 @@ const Products = ({ userEmail }: { userId: string | null, userEmail: string | nu
     };
   
     fetchProducts();
-  }, [userEmail, toast]);
+  }, [userSub, toast]);
 
 //   return (
 //     <div>
@@ -218,23 +218,23 @@ const Products = ({ userEmail }: { userId: string | null, userEmail: string | nu
                 ) : (
                   filteredProducts.length > 0 ? (
                     filteredProducts.map(product => (
-                      <TableRow key={product.id}>
+                      <TableRow key={product.productId}>
                         {/* <TableCell>{formatID(product.id)}</TableCell> */}
                         <TableCell>{product.name}</TableCell>
                         <TableCell className="flex justify-between">
                           R$: {product.price}
-                          <LucideClipboardX className="cursor-pointer" onClick={() => handleDeleteItem(product.id)} />
+                          <LucideClipboardX className="cursor-pointer" onClick={() => handleDeleteItem(product.productId)} />
                         </TableCell>
                       </TableRow>
                     ))
                   ) : (
                   products.map(product => (
-                    <TableRow key={product.id}>
+                    <TableRow key={product.productId}>
                       {/* <TableCell>{formatID(product.id)}</TableCell> */}
                       <TableCell>{product.name}</TableCell>
                       <TableCell className="flex justify-between">
                         R$: {product.price}
-                        <LucideClipboardX className="cursor-pointer" onClick={() => handleDeleteItem(product.id)} />
+                        <LucideClipboardX className="cursor-pointer" onClick={() => handleDeleteItem(product.productId)} />
                       </TableCell>
                     </TableRow>
                   ))
