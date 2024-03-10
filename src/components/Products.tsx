@@ -124,12 +124,12 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   const handleChangeNome = (e: ChangeEvent<HTMLInputElement>) => {
     setNome(e.target.value);
   };
-
+  
   useEffect(() => {
     const fetchProducts = async () => {
       if (userSub) {
         try {
-          const response = await axios.get(`http://localhost:3000/api/products/`);
+          const response = await axios.get(`http://localhost:3000/api/products?sub=${userSub}`);
           const responseData: Products[] = response.data;
   
           setProducts(responseData);

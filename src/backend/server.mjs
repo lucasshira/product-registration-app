@@ -50,7 +50,13 @@ app.post('/api/users', async (req, res) => {
 
 app.get('/api/products', async (req, res) => {
   try {
-    const products = await ProductModel.find();
+    const { sub } = req.query;
+
+    if (!sub) {
+      return res.status(400).json({ error: 'Sub parameter is required' });
+    }
+
+    const products = await ProductModel.find({ user: sub });
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -59,7 +65,6 @@ app.get('/api/products', async (req, res) => {
 
 app.post('/api/products', async (req, res) => {
   const { name, price, sub } = req.body;
-  const userSub = req.body.sub;
 
   try {
     // Verifique se o nome e o preço do produto estão presentes na requisição
