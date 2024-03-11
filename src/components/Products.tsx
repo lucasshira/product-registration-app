@@ -3,7 +3,7 @@ import { useState, useEffect, ChangeEvent } from 'react';
 
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { Search, PlusCircle, LucideClipboardX } from 'lucide-react';
+import { Search, PlusCircle, Trash2 } from 'lucide-react';
 import { Table, TableHead, TableHeader, TableBody, TableCell, TableRow } from "../components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DialogFooter, DialogHeader } from "../components/ui/dialog";
@@ -234,7 +234,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                         <TableCell>{product.name}</TableCell>
                         <TableCell className="flex justify-between">
                           R$: {product.price}
-                          <LucideClipboardX className="cursor-pointer" onClick={() => handleDeleteItem(product.productId)} />
+                          <Trash2 className="cursor-pointer" onClick={() => handleDeleteItem(product.productId)} />
                         </TableCell>
                       </TableRow>
                     ))
@@ -245,7 +245,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                       <TableCell>{product.name}</TableCell>
                       <TableCell className="flex justify-between">
                         R$: {product.price}
-                        <LucideClipboardX className="cursor-pointer" onClick={() => handleDeleteItem(product.productId)} />
+                        <Trash2 className="cursor-pointer" onClick={() => handleDeleteItem(product.productId)} />
                       </TableCell>
                     </TableRow>
                   ))
