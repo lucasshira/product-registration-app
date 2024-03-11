@@ -100,7 +100,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   const handleDeleteItem = async (productId: string) => {
     try {
       // Chamada para excluir o produto pelo ID
-      await axios.delete(`http://localhost:3000/api/products/${productId}`);
+      await axios.delete(`http://localhost:3000/api/products?sub=${userSub}&productId=${productId}`);
   
       // Atualize a lista de produtos após a exclusão do produto
       const updatedProducts = products.filter(product => product.productId !== productId);

@@ -90,6 +90,23 @@ app.post('/api/products', async (req, res) => {
   }
 });
 
+app.delete('/api/products', async (req, res) => {
+  const { sub, productId } = req.query;
+
+  try {
+    if (!sub || !productId) {
+      return res.status(400).json({ error: 'Sub and productId parameters are required' });
+    }
+  
+    await ProductModel.findOneAndDelete({ productId, user: sub });
+
+    res.json({ message: 'Product deleted successfully' });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
