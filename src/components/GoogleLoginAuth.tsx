@@ -74,6 +74,7 @@ const GoogleLoginAuth = ({ setUserSub }: { setUserSub: (sub: string) => void }) 
     googleLogout();
     setIsLoggedIn(false);
     setUserInfo(null);
+    window.location.reload();
   }
 
   return (
