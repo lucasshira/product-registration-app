@@ -69,10 +69,17 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       console.error('Sub do usuário não encontrado');
       return;
     }
+
+    if (isNaN(parseFloat(productPrice))) {
+      toast({
+        description: "O preço do produto precisa ser um número valido",
+      });
+      return;
+    }
   
     try {
       // Chamada para adicionar um novo produto
-      const response = await axios.post("http://localhost:3000/api/products", { name: productName, price: productPrice, sub: userSub });
+      const response = await axios.post("http://localhost:3000/api/products", { name: productName, price: parseFloat(productPrice), sub: userSub });
       console.log("Novo produto criado:", response.data);
 
       // Atualize a lista de produtos após adicionar um novo produto
@@ -81,6 +88,10 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       // Limpar os campos do formulário após a criação do produto
       setProductName('');
       setProductPrice('');
+      toast({
+        description: "Produto adicionado com sucesso!"
+      })
+      setIsModalOpen(false);
     } catch (error) {
       console.error('Erro ao criar o produto:', error);
     }
@@ -194,7 +205,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
 
                   <DialogFooter>
                     <DialogClose asChild>
-                      <Button type="submit" variant={"outline"}>Cancelar</Button>
+                      <Button type="button" variant={"outline"}>Cancelar</Button>
                     </DialogClose>
                     <Button type="submit" onClick={() => setIsModalOpen(true)}>Salvar</Button>
                   </DialogFooter>
