@@ -66,7 +66,10 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     // id vindo corretamente
     
     if (!userSub) {
-      console.error('Sub do usuário não encontrado');
+      toast({
+        description: "Faça login para adicionar novos produtos na tabela"
+      })
+      setIsModalOpen(false);
       return;
     }
 
@@ -131,7 +134,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       console.log("Resposta da API:", response.data);
   
       const filteredProducts = response.data.filter((product: any) => {
-        return product.name === name;
+        return product.name.toLowerCase().includes(name.toLowerCase()); // Verifica se o nome do produto contém a string fornecida
       });
 
       console.log("Produtos filtrados:", filteredProducts);
@@ -236,8 +239,8 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                 ) : (
                   filteredProducts.length > 0 ? (
                     filteredProducts.map(product => (
-                      <TableRow key={product.productId}>
-                        <TableCell>{product.productId}</TableCell>
+                      <TableRow key={product.productId.slice(0, 8)}>
+                        <TableCell>{product.productId.slice(0, 8)}</TableCell>
                         <TableCell>{product.name}</TableCell>
                         <TableCell className="flex justify-between">
                           R$: {product.price}
@@ -248,7 +251,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                   ) : (
                   products.map(product => (
                     <TableRow key={product.productId}>
-                        <TableCell>{product.productId}</TableCell>
+                        <TableCell>{product.productId.slice(0, 8)}</TableCell>
                       <TableCell>{product.name}</TableCell>
                       <TableCell className="flex justify-between">
                         R$: {product.price}
