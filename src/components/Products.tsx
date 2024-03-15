@@ -119,9 +119,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
 
   const handleFilterProducts = async (name: string) => {
     if (!name) {
-      toast({
-        description: "ID e/ou nome de produto não encontrado(s)",
-      });
+      setFilteredProducts([]);
       return;
     }
   
