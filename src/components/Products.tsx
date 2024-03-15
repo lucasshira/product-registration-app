@@ -29,7 +29,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   const [productPrice, setProductPrice] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [productId, setProductId] = useState<string>('');
-  const [nome, setNome] = useState<string>('');
+  const [name, setName] = useState<string>('');
   const [filteredProducts, setFilteredProducts] = useState<Products[]>([]);
 
   const { toast } = useToast();
@@ -99,32 +99,13 @@ const Products = ({ userSub }: { userSub: string | null }) => {
 
   const handleDeleteItem = async (productId: string) => {
     try {
-      // Chamada para excluir o produto pelo ID
       await axios.delete(`http://localhost:3000/api/products?sub=${userSub}&productId=${productId}`);
   
-      // Atualize a lista de produtos após a exclusão do produto
       const updatedProducts = products.filter(product => product.productId !== productId);
       setProducts(updatedProducts);
-      setFilteredProducts(updatedProducts); // Se necessário, atualize também os produtos filtrados
+      setFilteredProducts(updatedProducts);
     } catch (error) {
       console.error('Erro ao excluir o produto:', error);
-    }
-  };
-
-  const handleFilterProducts = async () => {
-    if (!productId && !nome) {
-      toast({
-        description: "ID e/ou nome de produto não encontrado(s)",
-      });
-      return;
-    }
-  
-    try {
-      // Chamada para filtrar produtos pelo ID e/ou nome
-      const response = await axios.get(`http://localhost:3000/api/products?name=${nome}&id=${productId}`);
-      setFilteredProducts(response.data);
-    } catch (error) {
-      console.error('Erro ao filtrar os produtos:', error);
     }
   };
 
@@ -133,7 +114,35 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   };
 
   const handleChangeNome = (e: ChangeEvent<HTMLInputElement>) => {
-    setNome(e.target.value);
+    setName(e.target.value);
+  };
+
+  const handleFilterProducts = async (name: string) => {
+    if (!name) {
+      toast({
+        description: "ID e/ou nome de produto não encontrado(s)",
+      });
+      return;
+    }
+  
+    try {
+      console.log("Enviando requisição para filtrar produtos:", { name, productId });
+      // Chamada para filtrar produtos pelo ID e/ou nome
+      const response = await axios.get(`http://localhost:3000/api/products?sub=${userSub}&name=${name}`);
+
+      console.log("Resposta da API:", response.data);
+  
+      const filteredProducts = response.data.filter((product: any) => {
+        return product.name === name;
+      });
+
+      console.log("Produtos filtrados:", filteredProducts);
+
+      setFilteredProducts(filteredProducts);
+      console.log(filteredProducts);
+    } catch (error) {
+      console.error('Erro ao filtrar os produtos:', error);
+    }
   };
 
   useEffect(() => {
@@ -169,14 +178,14 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     return (
         <div className="p-6 max-w-4xl mx-auto space-y-4">
           <div className="flex items-center justify-between">
-            <form className="flex items-center gap-2">
-                <Input type="id" placeholder="ID do pedido" onChange={handleChangeId} />
-                <Input type="name" placeholder="Nome do produto" onChange={handleChangeNome} />
-                <Button type="submit" variant={"link"} onClick={(e) => {e.preventDefault(); handleFilterProducts(); }}>
-                  <Search className="w-4 h-4 mr-2" />
-                  Filtar resultados
-                </Button>
-              </form>
+            <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); handleFilterProducts(name); }}>
+              <Input type="id" placeholder="ID do pedido" onChange={handleChangeId} />
+              <Input type="name" placeholder="Nome do produto" onChange={handleChangeNome} />
+              <Button type="submit" variant={"link"}>
+                <Search className="w-4 h-4 mr-2" />
+                Filtar resultados
+              </Button>
+            </form>
 
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogTrigger asChild>
@@ -230,7 +239,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                   filteredProducts.length > 0 ? (
                     filteredProducts.map(product => (
                       <TableRow key={product.productId}>
-                        <TableCell>{product.productId.slice(0, 8)}</TableCell>
+                        <TableCell>{product.productId}</TableCell>
                         <TableCell>{product.name}</TableCell>
                         <TableCell className="flex justify-between">
                           R$: {product.price}
@@ -241,7 +250,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                   ) : (
                   products.map(product => (
                     <TableRow key={product.productId}>
-                        <TableCell>{product.productId.slice(0, 8)}</TableCell>
+                        <TableCell>{product.productId}</TableCell>
                       <TableCell>{product.name}</TableCell>
                       <TableCell className="flex justify-between">
                         R$: {product.price}
