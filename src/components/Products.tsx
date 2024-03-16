@@ -106,7 +106,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   
       const updatedProducts = products.filter(product => product.productId !== productId);
       setProducts(updatedProducts);
-      setFilteredProducts(updatedProducts);
+      setFilteredProducts([]);
     } catch (error) {
       console.error('Erro ao excluir o produto:', error);
     }
@@ -138,6 +138,12 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       });
 
       console.log("Produtos filtrados:", filteredProducts);
+
+      if (filteredProducts.length === 0) {
+        toast({
+          description: "Produto não encontrado na base de dados"
+        });
+      }
 
       setFilteredProducts(filteredProducts);
       console.log(filteredProducts);
