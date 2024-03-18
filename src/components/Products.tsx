@@ -21,8 +21,6 @@ interface Products {
 }
 
 const Products = ({ userSub }: { userSub: string | null }) => {
-  // const [name, setName] = useState('');
-  // const [price, setPrice] = useState('');
   const [products, setProducts] = useState<Products[]>([]);
   const [productName, setProductName] = useState<string>('');
   const [productPrice, setProductPrice] = useState<string>('');
@@ -32,32 +30,6 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   const [filteredProducts, setFilteredProducts] = useState<Products[]>([]);
 
   const { toast } = useToast();
-
-  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-    
-  //   if (!userId) {
-  //     console.error('ID do usuário não encontrado');
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await axios.post("http://localhost:3000/api/products", { name, price, userId });
-  //     console.log("Novo produto criado:", response.data);
-  //     // Limpar os campos do formulário após a criação do produto
-  //     setName('');
-  //     setPrice('');
-  //   } catch (error) {
-  //     console.error('Erro ao criar o produto:', error);
-  //   }
-  // };
-
-  // const formatID = (id: string | undefined) => {
-  //   if (id) {
-  //     return id.substr(0, 8);
-  //   }
-  //   return "";
-  // };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -137,13 +109,13 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   
     try {
       console.log("Enviando requisição para filtrar produtos:", { name, productId });
-      // Chamada para filtrar produtos pelo ID e/ou nome
+
       const response = await axios.get(`http://localhost:3000/api/products?sub=${userSub}&name=${name}`);
 
       console.log("Resposta da API:", response.data);
   
       const filteredProducts = response.data.filter((product: any) => {
-        return product.name.toLowerCase().includes(name.toLowerCase()); // Verifica se o nome do produto contém a string fornecida
+        return product.name.toLowerCase().includes(name.toLowerCase());
       });
 
       console.log("Produtos filtrados:", filteredProducts);
@@ -179,23 +151,11 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     fetchProducts();
   }, [userSub, toast]);
 
-//   return (
-//     <div>
-//       <h1>Products</h1>
-//       <form onSubmit={handleSubmit}>
-//         <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" />
-//         <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Price" />
-//         <button type="submit">Add Product</button>
-//       </form>
-//     </div>
-//   );
-// }
-
     return (
         <div className="p-6 max-w-4xl mx-auto space-y-4">
           <div className="flex items-center justify-between">
             <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); handleFilterProducts(name); }}>
-              <Input type="id" placeholder="ID do pedido" onChange={handleChangeId} />
+              {/* <Input type="id" placeholder="ID do pedido" onChange={handleChangeId} /> */}
               <Input type="name" placeholder="Nome do produto" onChange={handleChangeNome} />
               <Button type="submit" variant={"link"}>
                 <Search className="w-4 h-4 mr-2" />

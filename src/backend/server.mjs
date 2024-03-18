@@ -68,12 +68,10 @@ app.post('/api/products', async (req, res) => {
   const { name, price, sub } = req.body;
 
   try {
-    // Verifique se o nome e o preço do produto estão presentes na requisição
     if (!name || !price || !sub) {
       return res.status(400).json({ error: 'Name, price and sub are required' });
     }
 
-    // Verifique se o usuário existe no banco de dados usando o email
     const user = await UserModel.findOne({ sub });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -81,7 +79,6 @@ app.post('/api/products', async (req, res) => {
 
     const productId = shortid.generate();
 
-    // Crie o produto associado ao usuário com base nos dados recebidos na requisição
     const product = new ProductModel({ productId, name, price, user: user.sub });
     await product.save();
 
