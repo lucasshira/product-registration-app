@@ -12,7 +12,6 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "../components/ui/use-toast";
 
-// import { v4 as uuidv4 } from 'uuid';
 import NenhumProduto from "../components/NenhumProduto";
 
 interface Products {
@@ -63,7 +62,6 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(userSub);
-    // id vindo corretamente
     
     if (!userSub) {
       toast({
@@ -75,20 +73,31 @@ const Products = ({ userSub }: { userSub: string | null }) => {
 
     if (isNaN(parseFloat(productPrice))) {
       toast({
-        description: "O preço do produto precisa ser um número valido",
+        description: "O preço do produto precisa ser um número válido",
       });
+      return;
+    }
+
+    if (parseFloat(productPrice) <= 0) {
+      toast({
+        description: "O preço do produto precisa ser maior que 0"
+      });
+      return;
+    }
+
+    if (productName.trim() === '') {
+      toast({
+        description: "Insira um nome no produto para prosseguir"
+      })
       return;
     }
   
     try {
-      // Chamada para adicionar um novo produto
       const response = await axios.post("http://localhost:3000/api/products", { name: productName, price: parseFloat(productPrice), sub: userSub });
       console.log("Novo produto criado:", response.data);
 
-      // Atualize a lista de produtos após adicionar um novo produto
       setProducts(prevProducts => [...prevProducts, response.data]);
   
-      // Limpar os campos do formulário após a criação do produto
       setProductName('');
       setProductPrice('');
       toast({
@@ -245,8 +254,8 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                 ) : (
                   filteredProducts.length > 0 ? (
                     filteredProducts.map(product => (
-                      <TableRow key={product.productId.slice(0, 8)}>
-                        <TableCell>{product.productId.slice(0, 8)}</TableCell>
+                      <TableRow key={product.productId}>
+                        <TableCell>{product.productId}</TableCell>
                         <TableCell>{product.name}</TableCell>
                         <TableCell className="flex justify-between">
                           R$: {product.price}
@@ -257,7 +266,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                   ) : (
                   products.map(product => (
                     <TableRow key={product.productId}>
-                        <TableCell>{product.productId.slice(0, 8)}</TableCell>
+                        <TableCell>{product.productId}</TableCell>
                       <TableCell>{product.name}</TableCell>
                       <TableCell className="flex justify-between">
                         R$: {product.price}

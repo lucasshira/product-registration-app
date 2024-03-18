@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
+import shortid from 'shortid';
 
 const productSchema = new mongoose.Schema({
-  productId: { type: String, required: true },
+  productId: { type: String, required: true, default: shortid.generate },
   name: { type: String, required: true },
   price: { type: Number, default: 0 },
   user: { type: String, required: true }

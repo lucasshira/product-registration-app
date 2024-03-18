@@ -3,7 +3,8 @@ import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
+import shortid from 'shortid';
 
 import ProductModel from './models/ProductModel.js';
 import UserModel from './models/UserModel.js';
@@ -78,7 +79,7 @@ app.post('/api/products', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const productId = uuidv4();
+    const productId = shortid.generate();
 
     // Crie o produto associado ao usuário com base nos dados recebidos na requisição
     const product = new ProductModel({ productId, name, price, user: user.sub });
