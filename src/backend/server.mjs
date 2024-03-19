@@ -3,11 +3,12 @@ import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
-// import { v4 as uuidv4 } from 'uuid';
 import shortid from 'shortid';
 
 import ProductModel from './models/ProductModel.js';
 import UserModel from './models/UserModel.js';
+
+import { MONGODB_USERNAME, MONGODB_PASSWORD } from '../../config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -17,7 +18,7 @@ app.use(cors());
 
 app.use(express.static(path.join(__dirname, '../App.tsx')));
 
-mongoose.connect('mongodb+srv://Lucas:sEnoc6rpQgH5xhdg@productsdatabase.zooepn0.mongodb.net/?retryWrites=true&w=majority&appName=ProductsDataBase', { 
+mongoose.connect(`mongodb+srv://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@productsdatabase.zooepn0.mongodb.net/?retryWrites=true&w=majority&appName=ProductsDataBase`, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => {

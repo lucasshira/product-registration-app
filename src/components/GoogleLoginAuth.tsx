@@ -28,7 +28,6 @@ const GoogleLoginAuth = ({ setUserSub }: { setUserSub: (sub: string) => void }) 
             },
           }
         );
-        console.log(res);
 
         const { given_name, family_name, picture, email, sub } = res.data;
 
@@ -52,12 +51,10 @@ const GoogleLoginAuth = ({ setUserSub }: { setUserSub: (sub: string) => void }) 
       if (existingUser) {
         setUserInfo(existingUser);
         setIsLoggedIn(true);
-        console.log("Usuário já existe:", existingUser);
         setUserSub(existingUser.sub); 
         return existingUser;
       } else {
         const response = await axios.post("http://localhost:3000/api/users", userInfo);
-        console.log("Novo usuário criado:", response.data);
         setUserSub(response.data.sub); 
         return response.data;
       }

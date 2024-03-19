@@ -11,7 +11,7 @@ export function App() {
 
         <div className="flex flex-row-reverse justify-between">
           <GoogleLoginAuth setUserSub={setUserSub} />
-          <a href={'/'} className="text-4xl font-bold">Produtos</a>
+          <a href={'#'} className="text-4xl font-bold">Produtos</a>
         </div>
         <Separator />
         <Products userSub={userSub} />

@@ -25,6 +25,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   const [productName, setProductName] = useState<string>('');
   const [productPrice, setProductPrice] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  // @ts-ignore
   const [productId, setProductId] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [filteredProducts, setFilteredProducts] = useState<Products[]>([]);
@@ -33,7 +34,6 @@ const Products = ({ userSub }: { userSub: string | null }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(userSub);
     
     if (!userSub) {
       toast({
@@ -66,7 +66,6 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   
     try {
       const response = await axios.post("http://localhost:3000/api/products", { name: productName, price: parseFloat(productPrice), sub: userSub });
-      console.log("Novo produto criado:", response.data);
 
       setProducts(prevProducts => [...prevProducts, response.data]);
   
@@ -93,10 +92,6 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     }
   };
 
-  const handleChangeId = (e: ChangeEvent<HTMLInputElement>) => {
-    setProductId(e.target.value);
-  };
-
   const handleChangeNome = (e: ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
   };
@@ -108,17 +103,11 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     }
   
     try {
-      console.log("Enviando requisição para filtrar produtos:", { name, productId });
-
       const response = await axios.get(`http://localhost:3000/api/products?sub=${userSub}&name=${name}`);
-
-      console.log("Resposta da API:", response.data);
   
       const filteredProducts = response.data.filter((product: any) => {
         return product.name.toLowerCase().includes(name.toLowerCase());
       });
-
-      console.log("Produtos filtrados:", filteredProducts);
 
       if (filteredProducts.length === 0) {
         toast({
@@ -127,7 +116,6 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       }
 
       setFilteredProducts(filteredProducts);
-      console.log(filteredProducts);
     } catch (error) {
       console.error('Erro ao filtrar os produtos:', error);
     }
@@ -155,7 +143,6 @@ const Products = ({ userSub }: { userSub: string | null }) => {
         <div className="p-6 max-w-4xl mx-auto space-y-4">
           <div className="flex items-center justify-between">
             <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); handleFilterProducts(name); }}>
-              {/* <Input type="id" placeholder="ID do pedido" onChange={handleChangeId} /> */}
               <Input type="name" placeholder="Nome do produto" onChange={handleChangeNome} />
               <Button type="submit" variant={"link"}>
                 <Search className="w-4 h-4 mr-2" />
