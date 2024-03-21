@@ -43,7 +43,7 @@ const GoogleLoginAuth = ({ setUserSub }: { setUserSub: (sub: string) => void }) 
 
   const createUser = async (userInfo: any) => {
     try {
-      const emailExistsResponse = await axios.get("http://localhost:3000/api/users");
+      const emailExistsResponse = await axios.get("https://product-registration-app-api.onrender.com/api/users");
       const existingUsers = emailExistsResponse.data;
   
       const existingUser = existingUsers.find((user: any) => user.sub === userInfo.sub);
@@ -54,7 +54,7 @@ const GoogleLoginAuth = ({ setUserSub }: { setUserSub: (sub: string) => void }) 
         setUserSub(existingUser.sub); 
         return existingUser;
       } else {
-        const response = await axios.post("http://localhost:3000/api/users", userInfo);
+        const response = await axios.post("https://product-registration-app-api.onrender.com/api/users", userInfo);
         setUserSub(response.data.sub); 
         return response.data;
       }

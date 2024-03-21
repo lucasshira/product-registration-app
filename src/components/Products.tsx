@@ -65,7 +65,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     }
   
     try {
-      const response = await axios.post("http://localhost:3000/api/products", { name: productName, price: parseFloat(productPrice), sub: userSub });
+      const response = await axios.post("https://product-registration-app-api.onrender.com/api/products", { name: productName, price: parseFloat(productPrice), sub: userSub });
 
       setProducts(prevProducts => [...prevProducts, response.data]);
   
@@ -82,7 +82,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
 
   const handleDeleteItem = async (productId: string) => {
     try {
-      await axios.delete(`http://localhost:3000/api/products?sub=${userSub}&productId=${productId}`);
+      await axios.delete(`https://product-registration-app-api.onrender.com/api/products?sub=${userSub}&productId=${productId}`);
   
       const updatedProducts = products.filter(product => product.productId !== productId);
       setProducts(updatedProducts);
@@ -103,7 +103,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     }
   
     try {
-      const response = await axios.get(`http://localhost:3000/api/products?sub=${userSub}&name=${name}`);
+      const response = await axios.get(`https://product-registration-app-api.onrender.com/api/products?sub=${userSub}&name=${name}`);
   
       const filteredProducts = response.data.filter((product: any) => {
         return product.name.toLowerCase().includes(name.toLowerCase());
@@ -125,7 +125,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     const fetchProducts = async () => {
       if (userSub) {
         try {
-          const response = await axios.get(`http://localhost:3000/api/products?sub=${userSub}`);
+          const response = await axios.get(`https://product-registration-app-api.onrender.com/api/products?sub=${userSub}`);
           const responseData: Products[] = response.data;
   
           setProducts(responseData);
