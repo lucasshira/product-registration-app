@@ -44,7 +44,14 @@ mongoose.connect(`mongodb+srv://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@products
 
 app.use(express.json());
 
-app.get('/api/users', async (req, res) => {
+const authenticateGetRequest = (req, res, next) => {
+  if (req.method === 'GET') {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  next();
+}
+
+app.get('/api/users', authenticateGetRequest, async (req, res) => {
   try {
     const users = await UserModel.find();
     res.status(200).json(users);
@@ -64,7 +71,7 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
-app.get('/api/products', async (req, res) => {
+app.get('/api/products', authenticateGetRequest, async (req, res) => {
   try {
     const { sub } = req.query;
 
