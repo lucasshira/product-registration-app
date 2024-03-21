@@ -45,8 +45,14 @@ mongoose.connect(`mongodb+srv://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@products
 app.use(express.json());
 
 const authenticateGetRequest = (req, res, next) => {
-  if (req.method === 'GET') {
-    return res.status(401).json({ error: "Unauthorized" });
+  if (req.method === 'GET' && req.url.startsWith('/api')) {
+    const referringURL = req.headers.referer || req.headers.origin;
+
+    if (referringURL && referringURL.startsWith('https://product-registration-app.onrender.com')) {
+      return next();
+    } else {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
   }
   next();
 }
