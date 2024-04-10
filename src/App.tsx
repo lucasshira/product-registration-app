@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Separator } from "@/components/ui/separator"
-import { Progress } from "@/components/ui/progress"
 import GoogleLoginAuth from "./components/GoogleLoginAuth";
 import Products from "./components/Products";
 import NotLogged from './components/NotLogged';
