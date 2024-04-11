@@ -13,6 +13,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "../components/ui/use-toast";
 
 import NenhumProduto from "../components/NenhumProduto";
+import Loading from '../components/Loading';
 
 interface Products {
   productId: string
@@ -25,6 +26,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   const [productName, setProductName] = useState<string>('');
   const [productPrice, setProductPrice] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   // @ts-ignore
   const [productId, setProductId] = useState<string>('');
   const [name, setName] = useState<string>('');
@@ -65,18 +67,21 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     }
   
     try {
-      const response = await axios.post("https://product-registration-app-api.onrender.com/api/products", { name: productName, price: parseFloat(productPrice), sub: userSub });
-
-      setProducts(prevProducts => [...prevProducts, response.data]);
+      setIsLoading(true);
+        const response = await axios.post("https://product-registration-app-api.onrender.com/api/products", { name: productName, price: parseFloat(productPrice), sub: userSub });
   
-      setProductName('');
-      setProductPrice('');
-      toast({
-        description: "Produto adicionado com sucesso!"
-      })
-      setIsModalOpen(false);
+        setProducts(prevProducts => [...prevProducts, response.data]);
+    
+        setProductName('');
+        setProductPrice('');
+        toast({
+          description: "Produto adicionado com sucesso!"
+        })
+        setIsModalOpen(false);
+        setIsLoading(false);
     } catch (error) {
       console.error('Erro ao criar o produto:', error);
+      setIsLoading(false);
     }
   };
 
@@ -179,7 +184,9 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                     <DialogClose asChild>
                       <Button type="button" variant={"outline"}>Cancelar</Button>
                     </DialogClose>
-                    <Button type="submit" onClick={() => setIsModalOpen(true)}>Salvar</Button>
+                    <Button type="submit" onClick={() => setIsModalOpen(true)}>
+                      {isLoading ? <Loading size={1} /> : "Salvar"}
+                    </Button>
                   </DialogFooter>
                 </form>
               </DialogContent>
