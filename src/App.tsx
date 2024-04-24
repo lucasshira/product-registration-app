@@ -8,22 +8,20 @@ import Loading from './components/Loading';
 export function App() {
   const [userSub, setUserSub] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
   const handleLoginSuccess = (sub: string) => {
     setUserSub(sub);
+    setLoggedIn(true);
   }
 
   useEffect(() => {
-    if (userSub !== null) {
+    if (userSub === null && loggedIn) {
+      setLoading(true);
+    } else {
       setLoading(false);
     }
-  }, [userSub])
-
-  useEffect(() => {
-    if (userSub === null) {
-      setLoading(true);
-    }
-  }, [userSub]);
+  }, [userSub, loggedIn])
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-4">
