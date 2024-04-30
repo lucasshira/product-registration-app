@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import cors from 'cors';
 import shortid from 'shortid';
 
-import ProductModel from './models/ProductModel.js';
+import ProductModel, { getCurrentDayMonth } from './models/ProductModel.js';
 import UserModel from './models/UserModel.js';
 
 import { MONGODB_USERNAME, MONGODB_PASSWORD } from '../../config.js';
@@ -15,7 +15,9 @@ const app = express();
 const PORT = 3000;
 
 const allowedOrigins = [
-  'https://product-registration-app.onrender.com'
+  'https://product-registration-app.onrender.com',
+  'http://localhost:3000',
+  'http://localhost:5173',
 ];
 
 const corsOptions = {
@@ -44,20 +46,21 @@ mongoose.connect(`mongodb+srv://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@products
 
 app.use(express.json());
 
-const authenticateGetRequest = (req, res, next) => {
-  if (req.method === 'GET' && req.url.startsWith('/api')) {
-    const referringURL = req.headers.referer || req.headers.origin;
+// const authenticateGetRequest = (req, res, next) => {
+//   if (req.method === 'GET' && req.url.startsWith('/api')) {
+//     const referringURL = req.headers.referer || req.headers.origin;
 
-    if (referringURL && referringURL.startsWith('https://product-registration-app.onrender.com')) {
-      return next();
-    } else {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-  }
-  next();
-}
+//     if (referringURL && referringURL.startsWith('https://product-registration-app.onrender.com')) {
+//       return next();
+//     } else {
+//       return res.status(401).json({ error: "Unauthorized" });
+//     }
+//   }
+//   next();
+// }
 
-app.get('/api/users', authenticateGetRequest, async (req, res) => {
+// authenticateGetRequest
+app.get('/api/users', async (req, res) => {
   try {
     const users = await UserModel.find();
     res.status(200).json(users);
@@ -77,7 +80,8 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
-app.get('/api/products', authenticateGetRequest, async (req, res) => {
+// authenticateGetRequest
+app.get('/api/products', async (req, res) => {
   try {
     const { sub } = req.query;
 
@@ -106,8 +110,9 @@ app.post('/api/products', async (req, res) => {
     }
 
     const productId = shortid.generate();
+    const date = getCurrentDayMonth();
 
-    const product = new ProductModel({ productId, name, price, user: user.sub });
+    const product = new ProductModel({ productId, name, price, date, user: user.sub });
     await product.save();
 
     res.status(201).json(product);

@@ -12,6 +12,7 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "../components/ui/use-toast";
 
+import { getCurrentDayMonth } from '../backend/models/ProductModel';
 import NenhumProduto from "../components/NenhumProduto";
 import Loading from '../components/Loading';
 
@@ -19,6 +20,7 @@ interface Products {
   productId: string
   name: string
   price: number
+  date: string
 }
 
 const Products = ({ userSub }: { userSub: string | null }) => {
@@ -68,17 +70,18 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   
     try {
       setIsLoading(true);
-        const response = await axios.post("https://product-registration-app-api.onrender.com/api/products", { name: productName, price: parseFloat(productPrice), sub: userSub });
+      const currentDate = getCurrentDayMonth();;
+      const response = await axios.post("http://localhost:3000/api/products", { name: productName, price: parseFloat(productPrice), date: currentDate, sub: userSub });
+
+      setProducts(prevProducts => [...prevProducts, response.data]);
   
-        setProducts(prevProducts => [...prevProducts, response.data]);
-    
-        setProductName('');
-        setProductPrice('');
-        toast({
-          description: "Produto adicionado com sucesso!"
-        })
-        setIsModalOpen(false);
-        setIsLoading(false);
+      setProductName('');
+      setProductPrice('');
+      toast({
+        description: "Produto adicionado com sucesso!"
+      })
+      setIsModalOpen(false);
+      setIsLoading(false);
     } catch (error) {
       console.error('Erro ao criar o produto:', error);
       setIsLoading(false);
@@ -87,7 +90,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
 
   const handleDeleteItem = async (productId: string) => {
     try {
-      await axios.delete(`https://product-registration-app-api.onrender.com/api/products?sub=${userSub}&productId=${productId}`);
+      await axios.delete(`http://localhost:3000/api/products?sub=${userSub}&productId=${productId}`);
   
       const updatedProducts = products.filter(product => product.productId !== productId);
       setProducts(updatedProducts);
@@ -108,7 +111,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     }
   
     try {
-      const response = await axios.get(`https://product-registration-app-api.onrender.com/api/products?sub=${userSub}&name=${name}`);
+      const response = await axios.get(`http://localhost:3000/api/products?sub=${userSub}&name=${name}`);
   
       const filteredProducts = response.data.filter((product: any) => {
         return product.name.toLowerCase().includes(name.toLowerCase());
@@ -130,7 +133,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     const fetchProducts = async () => {
       if (userSub) {
         try {
-          const response = await axios.get(`https://product-registration-app-api.onrender.com/api/products?sub=${userSub}`);
+          const response = await axios.get(`http://localhost:3000/api/products?sub=${userSub}`);
           const responseData: Products[] = response.data;
   
           setProducts(responseData);
@@ -158,7 +161,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogTrigger asChild>
               <Button>
-                <PlusCircle className="w-4 h-4 mr-2" />
+                <PlusCircle className="size-4 mr-2" />
                   Novo produto
                 </Button>
             </DialogTrigger>
@@ -200,6 +203,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                   <TableHead>ID</TableHead>
                   <TableHead>Produto</TableHead>
                   <TableHead>Preço</TableHead>
+                  <TableHead>Data</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -211,8 +215,9 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                       <TableRow key={product.productId}>
                         <TableCell>{product.productId}</TableCell>
                         <TableCell>{product.name}</TableCell>
-                        <TableCell className="flex justify-between">
-                          R$: {product.price}
+                        <TableCell>R$: {product.price}</TableCell>
+                        <TableCell>{product.date}</TableCell>
+                        <TableCell className="flex justify-end">
                           <Trash2 className="cursor-pointer" onClick={() => handleDeleteItem(product.productId)} />
                         </TableCell>
                       </TableRow>
@@ -222,9 +227,10 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                     <TableRow key={product.productId}>
                         <TableCell>{product.productId}</TableCell>
                       <TableCell>{product.name}</TableCell>
-                      <TableCell className="flex justify-between">
-                        R$: {product.price}
-                        <Trash2 className="cursor-pointer" onClick={() => handleDeleteItem(product.productId)} />
+                      <TableCell>R$: {product.price}</TableCell>
+                      <TableCell>{product.date}</TableCell>
+                      <TableCell className="flex justify-end">
+                        <Trash2 className="cursor-pointer justify-end" onClick={() => handleDeleteItem(product.productId)} />
                       </TableCell>
                     </TableRow>
                   ))

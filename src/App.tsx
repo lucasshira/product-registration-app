@@ -11,14 +11,15 @@ export function App() {
 
   const handleLoginSuccess = (sub: string) => {
     setUserSub(sub);
-    setLoading(false);
   }
 
   useEffect(() => {
-    if (loading && userSub === null) {
+    if (userSub === null) {
       setLoading(true);
+    } else {
+      setLoading(false);
     }
-  }, [loading, userSub])
+  }, [userSub])
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-4">
