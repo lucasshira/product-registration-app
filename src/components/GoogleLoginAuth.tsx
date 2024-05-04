@@ -14,7 +14,6 @@ interface UserInfo {
 const GoogleLoginAuth = ({ setUserSub, setLoading }: { setUserSub: (sub: string) => void, setLoading: (loading: boolean) => void }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-  // const [loading, setLoading] = useState<boolean>(false);
 
   const login = useGoogleLogin({
     onSuccess: async (response) => {
