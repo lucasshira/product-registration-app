@@ -11,13 +11,15 @@ interface UserInfo {
   sub: string;
 }
 
-const GoogleLoginAuth = ({ setUserSub }: { setUserSub: (sub: string) => void }) => {
+const GoogleLoginAuth = ({ setUserSub, setLoading }: { setUserSub: (sub: string) => void, setLoading: (loading: boolean) => void }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  // const [loading, setLoading] = useState<boolean>(false);
 
   const login = useGoogleLogin({
     onSuccess: async (response) => {
       try {
+        setLoading(true);
         const res = await axios.get(
           "https://www.googleapis.com/oauth2/v3/userinfo",
           {
@@ -33,6 +35,7 @@ const GoogleLoginAuth = ({ setUserSub }: { setUserSub: (sub: string) => void }) 
         setIsLoggedIn(true);
 
         await createUser({ given_name, family_name, picture, email, sub });
+        setLoading(false);
       } catch (err) {
         console.log(err);
       }
@@ -41,6 +44,7 @@ const GoogleLoginAuth = ({ setUserSub }: { setUserSub: (sub: string) => void }) 
 
   const createUser = async (userInfo: any) => {
     try {
+      setLoading(true);
       const emailExistsResponse = await axios.get("http://localhost:3000/api/users");
       const existingUsers = emailExistsResponse.data;
   
@@ -50,10 +54,12 @@ const GoogleLoginAuth = ({ setUserSub }: { setUserSub: (sub: string) => void }) 
         setUserInfo(existingUser);
         setIsLoggedIn(true);
         setUserSub(existingUser.sub); 
+        setLoading(false);
         return existingUser;
       } else {
         const response = await axios.post("http://localhost:3000/api/users", userInfo);
-        setUserSub(response.data.sub); 
+        setUserSub(response.data.sub);
+        setLoading(false);
         return response.data;
       }
     } catch (error) {

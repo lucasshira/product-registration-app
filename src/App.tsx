@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Separator } from "@/components/ui/separator"
 import GoogleLoginAuth from "./components/GoogleLoginAuth";
 import Products from "./components/Products";
@@ -11,20 +11,12 @@ export function App() {
 
   const handleLoginSuccess = (sub: string) => {
     setUserSub(sub);
-  }
-
-  useEffect(() => {
-    if (userSub === null) {
-      setLoading(true);
-    } else {
-      setLoading(false);
-    }
-  }, [userSub])
+  };
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-4">
       <div className="flex flex-row-reverse justify-between">
-        <GoogleLoginAuth setUserSub={handleLoginSuccess} />
+        <GoogleLoginAuth setUserSub={handleLoginSuccess} setLoading={setLoading} />
         <a href={'#'} className="text-4xl font-bold">Produtos</a>
       </div>
       <Separator />
