@@ -215,7 +215,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                       <TableRow key={product.productId}>
                         <TableCell>{product.productId}</TableCell>
                         <TableCell>{product.name}</TableCell>
-                        <TableCell>R$: {product.price}</TableCell>
+                        <TableCell>{product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</TableCell>
                         <TableCell>{product.date}</TableCell>
                         <TableCell className="flex justify-end">
                           <Trash2 className="cursor-pointer" onClick={() => handleDeleteItem(product.productId)} />
@@ -225,9 +225,9 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                   ) : (
                   products.map(product => (
                     <TableRow key={product.productId}>
-                        <TableCell>{product.productId}</TableCell>
+                      <TableCell>{product.productId}</TableCell>
                       <TableCell>{product.name}</TableCell>
-                      <TableCell>R$: {product.price}</TableCell>
+                      <TableCell>{product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</TableCell>
                       <TableCell>{product.date}</TableCell>
                       <TableCell className="flex justify-end">
                         <Trash2 className="cursor-pointer justify-end" onClick={() => handleDeleteItem(product.productId)} />

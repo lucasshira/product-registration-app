@@ -36,22 +36,20 @@ export function App() {
   };
 
   return (
-    <div>
-      <body className={`${isDarkMode ? '' : 'dark'} h-screen`}>
-        <div className="p-6 max-w-4xl mx-auto space-y-4">
-          <div className="flex flex-row-reverse justify-between">
-            <GoogleLoginAuth setUserSub={handleLoginSuccess} setLoading={setLoading} />
-            <DarkModeButton theme={isDarkMode ? 'dark' : ''} changeTheme={toggleDarkMode} />
-            <a href={'#'} className="text-4xl font-bold">Produtos</a>
-          </div>
-          <Separator />
-          {loading ? (
-            <Loading size={2} />
-          ) : (
-            userSub ? <Products userSub={userSub} /> : <NotLogged />
-          )}
+    <body className={`${isDarkMode ? '' : 'dark'} min-h-screen`}>
+      <div className="p-6 max-w-4xl mx-auto space-y-4">
+        <div className="flex flex-row-reverse justify-between items-center">
+          <GoogleLoginAuth setUserSub={handleLoginSuccess} setLoading={setLoading} />
+          <DarkModeButton theme={isDarkMode ? 'dark' : ''} changeTheme={toggleDarkMode} />
+          <a href={'#'} className="text-4xl font-bold">Produtos</a>
         </div>
-      </body>
-    </div>
+        <Separator />
+        {loading ? (
+          <Loading size={2} />
+        ) : (
+          userSub ? <Products userSub={userSub} /> : <NotLogged />
+        )}
+      </div>
+    </body>
   );
 }

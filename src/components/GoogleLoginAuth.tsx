@@ -85,7 +85,7 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: { setUserSub: (sub: string)
           </Button>
         </div>
       ) : (
-        <div className="py-2">
+        <div>
           <Button variant="outline" onClick={() => login()}>
             Sign in with Google 🚀
           </Button>

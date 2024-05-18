@@ -34,6 +34,7 @@
     "mongoose": "^8.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-number-format": "^5.3.4",
     "react-tooltip": "^5.26.3",
     "shortid": "^2.2.16",
     "tailwind-merge": "^2.2.1",
