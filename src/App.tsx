@@ -45,7 +45,7 @@ export function App() {
         </div>
         <Separator />
         {loading ? (
-          <Loading size={2} />
+          <Loading darkMode={isDarkMode ? false : true} size={2} />
         ) : (
           userSub ? <Products userSub={userSub} /> : <NotLogged />
         )}

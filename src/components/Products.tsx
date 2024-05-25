@@ -104,6 +104,16 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     setName(e.target.value);
   };
 
+  const handlePriceChange = (e: any) => {
+    let value = e.target.value.replace(/\D/g, '');
+    setProductPrice(value);
+  };
+
+  const formattedPrice = (value: any) => {
+    if (!value) return '';
+    return (parseInt(value) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  };
+
   const handleFilterProducts = async (name: string) => {
     if (!name) {
       setFilteredProducts([]);
@@ -180,7 +190,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
 
                   <div className="grid grid-cols-4 items-center text-right gap-2">
                     <Label htmlFor="price">Preço</Label>
-                    <Input className="col-span-3" id="price" value={productPrice} onChange={(e) => setProductPrice(e.target.value)} />
+                    <Input className="col-span-3" id="price" value={formattedPrice(productPrice)} onChange={handlePriceChange} />
                   </div>
 
                   <DialogFooter>
@@ -215,7 +225,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                       <TableRow key={product.productId}>
                         <TableCell>{product.productId}</TableCell>
                         <TableCell>{product.name}</TableCell>
-                        <TableCell>{product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</TableCell>
+                        <TableCell>{product.price}</TableCell>
                         <TableCell>{product.date}</TableCell>
                         <TableCell className="flex justify-end">
                           <Trash2 className="cursor-pointer" onClick={() => handleDeleteItem(product.productId)} />
@@ -227,7 +237,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                     <TableRow key={product.productId}>
                       <TableCell>{product.productId}</TableCell>
                       <TableCell>{product.name}</TableCell>
-                      <TableCell>{product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</TableCell>
+                      <TableCell>{product.price}</TableCell>
                       <TableCell>{product.date}</TableCell>
                       <TableCell className="flex justify-end">
                         <Trash2 className="cursor-pointer justify-end" onClick={() => handleDeleteItem(product.productId)} />
