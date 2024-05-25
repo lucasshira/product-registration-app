@@ -135,7 +135,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
 
       setFilteredProducts(filteredProducts);
     } catch (error) {
-      console.error('Erro ao filtrar os produtos:', error);
+      console.error('Erro ao filtrar os produtos: ', error);
     }
   };
 
@@ -225,7 +225,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                       <TableRow key={product.productId}>
                         <TableCell>{product.productId}</TableCell>
                         <TableCell>{product.name}</TableCell>
-                        <TableCell>{product.price}</TableCell>
+                        <TableCell>{formattedPrice(product.price)}</TableCell>
                         <TableCell>{product.date}</TableCell>
                         <TableCell className="flex justify-end">
                           <Trash2 className="cursor-pointer" onClick={() => handleDeleteItem(product.productId)} />
@@ -237,7 +237,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                     <TableRow key={product.productId}>
                       <TableCell>{product.productId}</TableCell>
                       <TableCell>{product.name}</TableCell>
-                      <TableCell>{product.price}</TableCell>
+                      <TableCell>{formattedPrice(product.price)}</TableCell>
                       <TableCell>{product.date}</TableCell>
                       <TableCell className="flex justify-end">
                         <Trash2 className="cursor-pointer justify-end" onClick={() => handleDeleteItem(product.productId)} />
