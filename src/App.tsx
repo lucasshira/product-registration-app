@@ -11,7 +11,7 @@ import useAppData from './hook/useAppData';
 export function App() {
   const [userSub, setUserSub] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   
   const { changeTheme } = useAppData();
   
@@ -28,6 +28,14 @@ export function App() {
     }
   }, []);
 
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.remove('dark');
+    } else {
+      document.body.classList.add('dark');
+    }
+  }, [isDarkMode]);
+
   const toggleDarkMode = () => {
     const newMode = !isDarkMode;
     setIsDarkMode(newMode);
@@ -36,7 +44,7 @@ export function App() {
   };
 
   return (
-    <body className={`${isDarkMode ? '' : 'dark'} min-h-screen`}>
+    <div className="min-h-screen">
       <div className="p-6 max-w-4xl mx-auto space-y-4">
         <div className="flex flex-row-reverse justify-between items-center">
           <GoogleLoginAuth setUserSub={handleLoginSuccess} setLoading={setLoading} />
@@ -50,6 +58,6 @@ export function App() {
           userSub ? <Products userSub={userSub} /> : <NotLogged />
         )}
       </div>
-    </body>
+    </div>
   );
 }
