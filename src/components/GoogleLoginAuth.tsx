@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button"
 import { useGoogleLogin, googleLogout } from '@react-oauth/google';
 
@@ -11,9 +11,32 @@ interface UserInfo {
   sub: string;
 }
 
-const GoogleLoginAuth = ({ setUserSub, setLoading }: { setUserSub: (sub: string) => void, setLoading: (loading: boolean) => void }) => {
+interface GoogleLoginAuthProps {
+  setUserSub: (sub: string | null) => void;
+  setLoading: (loading: boolean) => void;
+}
+
+const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+
+  useEffect(() => {
+    const savedUserInfo = localStorage.getItem('userInfo');
+    if (savedUserInfo) {
+      const parsedUserInfo = JSON.parse(savedUserInfo);
+      setUserInfo(parsedUserInfo);
+      setIsLoggedIn(true);
+      setUserSub(parsedUserInfo.sub);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isLoggedIn && userInfo) {
+      localStorage.setItem('userInfo', JSON.stringify(userInfo));
+    } else {
+      localStorage.removeItem('userInfo');
+    }
+  }, [isLoggedIn, userInfo]);
 
   const login = useGoogleLogin({
     onSuccess: async (response) => {
@@ -41,7 +64,7 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: { setUserSub: (sub: string)
     },
   });
 
-  const createUser = async (userInfo: any) => {
+  const createUser = async (userInfo: UserInfo) => {
     try {
       setLoading(true);
       const emailExistsResponse = await axios.get("http://localhost:3000/api/users");
@@ -71,6 +94,8 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: { setUserSub: (sub: string)
     googleLogout();
     setIsLoggedIn(false);
     setUserInfo(null);
+    localStorage.removeItem('userInfo');
+    setUserSub(null);
     window.location.reload();
   }
 
