@@ -261,11 +261,13 @@ const Products = ({ userSub }: { userSub: string | null }) => {
             )}
           </TableBody>
         </Table>
-        <Separator className="mt-3" />
         {totalPages > 1 && (
-          <div className="flex justify-center mt-4">
+          <>
+          <Separator className="mt-2" />
+          <div className="flex justify-center mt-2">
             <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
           </div>
+          </>
         )}
         <Toaster />
       </div>

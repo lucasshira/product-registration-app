@@ -38,14 +38,22 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) 
         <PaginationItem>
           <PaginationPrevious
             href="#"
-            onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+            onClick={(e) => {
+              e.preventDefault();
+              if (currentPage > 1) onPageChange(currentPage - 1);
+            }}
+            className={currentPage === 1 ? 'disabled-class' : ''}
           />
         </PaginationItem>
         {getPaginationItems()}
         <PaginationItem>
           <PaginationNext
             href="#"
-            onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+            onClick={(e) => {
+              e.preventDefault();
+              if (currentPage < totalPages) onPageChange(currentPage + 1);
+            }}
+            className={currentPage === totalPages ? 'disabled-class' : ''}
           />
         </PaginationItem>
       </PaginationContent>
