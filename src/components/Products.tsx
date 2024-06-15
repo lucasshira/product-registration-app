@@ -11,10 +11,12 @@ import { Label } from "@radix-ui/react-label";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "../components/ui/use-toast";
+import { Separator } from "@/components/ui/separator"
 
 import { getCurrentDayMonth } from '../backend/models/ProductModel';
 import NenhumProduto from "../components/NenhumProduto";
 import Loading from '../components/Loading';
+import Pagination from '../components/Pagination'; // Importe o componente de paginação
 
 interface Products {
   productId: string
@@ -35,6 +37,10 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   const [filteredProducts, setFilteredProducts] = useState<Products[]>([]);
 
   const { toast } = useToast();
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage] = useState<number>(10);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -70,7 +76,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   
     try {
       setIsLoading(true);
-      const currentDate = getCurrentDayMonth();;
+      const currentDate = getCurrentDayMonth();
       const response = await axios.post("http://localhost:3000/api/products", { name: productName, price: parseFloat(productPrice), date: currentDate, sub: userSub });
 
       setProducts(prevProducts => [...prevProducts, response.data]);
@@ -157,101 +163,114 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     fetchProducts();
   }, [userSub, toast]);
 
-    return (
-        <div className="p-6 max-w-4xl mx-auto space-y-4">
-          <div className="flex items-center justify-between">
-            <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); handleFilterProducts(name); }}>
-              <Input type="name" placeholder="Nome do produto" onChange={handleChangeNome} />
-              <Button type="submit" variant={"link"}>
-                <Search className="w-4 h-4 mr-2" />
-                Filtar resultados
-              </Button>
-            </form>
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
-          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <PlusCircle className="size-4 mr-2" />
-                  Novo produto
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const currentProducts = products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  return (
+    <div className="p-6 max-w-4xl mx-auto space-y-4">
+      <div className="flex items-center justify-between">
+        <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); handleFilterProducts(name); }}>
+          <Input type="name" placeholder="Nome do produto" onChange={handleChangeNome} />
+          <Button type="submit" variant={"link"}>
+            <Search className="w-4 h-4 mr-2" />
+            Filtar resultados
+          </Button>
+        </form>
+
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <PlusCircle className="size-4 mr-2" />
+              Novo produto
+            </Button>
+          </DialogTrigger>
+
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Novo produto</DialogTitle>
+              <DialogDescription>Criar um novo produto no sistema</DialogDescription>
+            </DialogHeader>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-4 items-center text-right gap-2">
+                <Label htmlFor="name">Produto</Label>
+                <Input className="col-span-3" id="name" value={productName} onChange={(e) => setProductName(e.target.value)} />
+              </div>
+
+              <div className="grid grid-cols-4 items-center text-right gap-2">
+                <Label htmlFor="price">Preço</Label>
+                <Input className="col-span-3" id="price" value={formattedPrice(productPrice)} onChange={handlePriceChange} />
+              </div>
+
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button type="button" variant={"outline"}>Cancelar</Button>
+                </DialogClose>
+                <Button type="submit" onClick={() => setIsModalOpen(true)}>
+                  {isLoading ? <Loading size={1} /> : "Salvar"}
                 </Button>
-            </DialogTrigger>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
 
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Novo produto</DialogTitle>
-                  <DialogDescription>Criar um novo produto no sistema</DialogDescription>
-                </DialogHeader>
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-4 items-center text-right gap-2">
-                    <Label htmlFor="name">Produto</Label>
-                    <Input className="col-span-3" id="name" value={productName} onChange={(e) => setProductName(e.target.value)} />
-                  </div>
-
-                  <div className="grid grid-cols-4 items-center text-right gap-2">
-                    <Label htmlFor="price">Preço</Label>
-                    <Input className="col-span-3" id="price" value={formattedPrice(productPrice)} onChange={handlePriceChange} />
-                  </div>
-
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button type="button" variant={"outline"}>Cancelar</Button>
-                    </DialogClose>
-                    <Button type="submit" onClick={() => setIsModalOpen(true)}>
-                      {isLoading ? <Loading size={1} /> : "Salvar"}
-                    </Button>
-                  </DialogFooter>
-                </form>
-              </DialogContent>
-            </Dialog>
+      <div className="border rounded-lg p-2">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Produto</TableHead>
+              <TableHead>Preço</TableHead>
+              <TableHead>Data</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {(!products.length && !filteredProducts.length) ? (
+              <NenhumProduto />
+            ) : (
+              filteredProducts.length > 0 ? (
+                filteredProducts.map(product => (
+                  <TableRow key={product.productId}>
+                    <TableCell>{product.productId}</TableCell>
+                    <TableCell>{product.name}</TableCell>
+                    <TableCell>{formattedPrice(product.price)}</TableCell>
+                    <TableCell>{product.date}</TableCell>
+                    <TableCell className="flex justify-end">
+                      <Trash2 className="cursor-pointer" onClick={() => handleDeleteItem(product.productId)} />
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                currentProducts.map(product => (
+                  <TableRow key={product.productId}>
+                    <TableCell>{product.productId}</TableCell>
+                    <TableCell>{product.name}</TableCell>
+                    <TableCell>{formattedPrice(product.price)}</TableCell>
+                    <TableCell>{product.date}</TableCell>
+                    <TableCell className="flex justify-end">
+                      <Trash2 className="cursor-pointer justify-end" onClick={() => handleDeleteItem(product.productId)} />
+                    </TableCell>
+                  </TableRow>
+                ))
+              )
+            )}
+          </TableBody>
+        </Table>
+        <Separator className="mt-3" />
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-4">
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
           </div>
-
-          <div className="border rounded-lg p-2">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Produto</TableHead>
-                  <TableHead>Preço</TableHead>
-                  <TableHead>Data</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {(!products.length && !filteredProducts.length) ? (
-                  <NenhumProduto />
-                ) : (
-                  filteredProducts.length > 0 ? (
-                    filteredProducts.map(product => (
-                      <TableRow key={product.productId}>
-                        <TableCell>{product.productId}</TableCell>
-                        <TableCell>{product.name}</TableCell>
-                        <TableCell>{formattedPrice(product.price)}</TableCell>
-                        <TableCell>{product.date}</TableCell>
-                        <TableCell className="flex justify-end">
-                          <Trash2 className="cursor-pointer" onClick={() => handleDeleteItem(product.productId)} />
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                  products.map(product => (
-                    <TableRow key={product.productId}>
-                      <TableCell>{product.productId}</TableCell>
-                      <TableCell>{product.name}</TableCell>
-                      <TableCell>{formattedPrice(product.price)}</TableCell>
-                      <TableCell>{product.date}</TableCell>
-                      <TableCell className="flex justify-end">
-                        <Trash2 className="cursor-pointer justify-end" onClick={() => handleDeleteItem(product.productId)} />
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )
-              )}
-            </TableBody>
-          </Table>
+        )}
         <Toaster />
       </div>
     </div>
-  )
+  );
 }
 
 export default Products;
