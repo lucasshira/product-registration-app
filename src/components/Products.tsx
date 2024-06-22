@@ -9,31 +9,29 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } 
 import { DialogFooter, DialogHeader } from "../components/ui/dialog";
 import { Label } from "@radix-ui/react-label";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "../components/ui/use-toast";
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@/components/ui/separator";
 
 import { getCurrentDayMonth } from '../backend/models/ProductModel';
 import NenhumProduto from "../components/NenhumProduto";
 import Loading from '../components/Loading';
-import Pagination from '../components/Pagination'; // Importe o componente de paginação
+import Pagination from '../components/Pagination';
 
 interface Products {
-  productId: string
-  name: string
-  price: number
-  date: string
+  productId: string;
+  name: string;
+  price: number;
+  date: string;
 }
 
 const Products = ({ userSub }: { userSub: string | null }) => {
   const [products, setProducts] = useState<Products[]>([]);
   const [productName, setProductName] = useState<string>('');
   const [productPrice, setProductPrice] = useState<string>('');
+  const [name, setName] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  // @ts-ignore
-  const [productId, setProductId] = useState<string>('');
-  const [name, setName] = useState<string>('');
   const [filteredProducts, setFilteredProducts] = useState<Products[]>([]);
 
   const { toast } = useToast();
@@ -48,7 +46,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     if (!userSub) {
       toast({
         description: "Faça login para adicionar novos produtos na tabela"
-      })
+      });
       setIsModalOpen(false);
       return;
     }
@@ -70,7 +68,14 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     if (productName.trim() === '') {
       toast({
         description: "Insira um nome no produto para prosseguir"
-      })
+      });
+      return;
+    }
+
+    if (productName.length >= 90) {
+      toast({
+        description: "Ocorreu um erro ao adicionar o produto"
+      });
       return;
     }
   
@@ -79,13 +84,22 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       const currentDate = getCurrentDayMonth();
       const response = await axios.post("http://localhost:3000/api/products", { name: productName, price: parseFloat(productPrice), date: currentDate, sub: userSub });
 
-      setProducts(prevProducts => [...prevProducts, response.data]);
+      setProducts(prevProducts => {
+        const updatedProducts = [...prevProducts, response.data];
+        const totalPages = Math.ceil(updatedProducts.length / itemsPerPage);
+
+        if (updatedProducts.length > prevProducts.length && totalPages > currentPage) {
+          setCurrentPage(totalPages);
+        }
+
+        return updatedProducts;
+      });
   
       setProductName('');
       setProductPrice('');
       toast({
         description: "Produto adicionado com sucesso!"
-      })
+      });
       setIsModalOpen(false);
       setIsLoading(false);
     } catch (error) {
@@ -101,6 +115,13 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       const updatedProducts = products.filter(product => product.productId !== productId);
       setProducts(updatedProducts);
       setFilteredProducts([]);
+
+      const totalPagesAfterDeletion = Math.ceil(updatedProducts.length / itemsPerPage);
+      if (currentPage > totalPagesAfterDeletion) {
+        setCurrentPage(totalPagesAfterDeletion);
+      }
+
+      if (currentPage <= 1) setCurrentPage(1);
     } catch (error) {
       console.error('Erro ao excluir o produto:', error);
     }
@@ -210,7 +231,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                 <DialogClose asChild>
                   <Button type="button" variant={"outline"}>Cancelar</Button>
                 </DialogClose>
-                <Button type="submit" onClick={() => setIsModalOpen(true)}>
+                <Button type="submit">
                   {isLoading ? <Loading size={1} /> : "Salvar"}
                 </Button>
               </DialogFooter>
@@ -220,55 +241,59 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       </div>
 
       <div className="border rounded-lg p-2">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Produto</TableHead>
-              <TableHead>Preço</TableHead>
-              <TableHead>Data</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {(!products.length && !filteredProducts.length) ? (
-              <NenhumProduto />
-            ) : (
-              filteredProducts.length > 0 ? (
-                filteredProducts.map(product => (
-                  <TableRow key={product.productId}>
-                    <TableCell>{product.productId}</TableCell>
-                    <TableCell>{product.name}</TableCell>
-                    <TableCell>{formattedPrice(product.price)}</TableCell>
-                    <TableCell>{product.date}</TableCell>
-                    <TableCell className="flex justify-end">
-                      <Trash2 className="cursor-pointer" onClick={() => handleDeleteItem(product.productId)} />
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                currentProducts.map(product => (
-                  <TableRow key={product.productId}>
-                    <TableCell>{product.productId}</TableCell>
-                    <TableCell>{product.name}</TableCell>
-                    <TableCell>{formattedPrice(product.price)}</TableCell>
-                    <TableCell>{product.date}</TableCell>
-                    <TableCell className="flex justify-end">
-                      <Trash2 className="cursor-pointer justify-end" onClick={() => handleDeleteItem(product.productId)} />
-                    </TableCell>
-                  </TableRow>
-                ))
-              )
-            )}
-          </TableBody>
-        </Table>
-        {totalPages > 1 && (
-          <>
-          <Separator className="mt-2" />
-          <div className="flex justify-center mt-2">
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+      {(!products.length && !filteredProducts.length) ? (
+          <div className="flex items-center justify-center h-12">
+            <NenhumProduto />
           </div>
-          </>
-        )}
+        ) : (
+          <>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Produto</TableHead>
+                  <TableHead>Preço</TableHead>
+                  <TableHead>Data</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredProducts.length > 0 ? (
+                      filteredProducts.map(product => (
+                        <TableRow key={product.productId}>
+                          <TableCell>{product.productId}</TableCell>
+                          <TableCell>{product.name}</TableCell>
+                          <TableCell>{formattedPrice(product.price)}</TableCell>
+                          <TableCell>{product.date}</TableCell>
+                          <TableCell className="flex justify-end">
+                            <Trash2 className="cursor-pointer" onClick={() => handleDeleteItem(product.productId)} />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      currentProducts.map(product => (
+                        <TableRow key={product.productId}>
+                          <TableCell>{product.productId}</TableCell>
+                          <TableCell>{product.name}</TableCell>
+                          <TableCell>{formattedPrice(product.price)}</TableCell>
+                          <TableCell>{product.date}</TableCell>
+                          <TableCell className="flex justify-end">
+                            <Trash2 className="cursor-pointer justify-end" onClick={() => handleDeleteItem(product.productId)} />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+                {totalPages > 1 && (
+                <>
+                  <Separator className="mt-2" />
+                  <div className="flex justify-center mt-2">
+                    <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+                  </div>
+                </>
+              )}
+            </>
+          )}
         <Toaster />
       </div>
     </div>

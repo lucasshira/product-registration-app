@@ -1,8 +1,8 @@
 const NenhumProduto = () => {
   return (
-  <div className="font-medium text-center my-4">
-    <h2>Nenhum produto adicionado na base ainda.</h2>
-  </div>
+    <div className="font-medium text-center">
+      <h2>Sua lista de produtos está vazia, adicione um novo produto.</h2>
+    </div>
   );
 }
 
