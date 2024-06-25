@@ -29,10 +29,11 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   const [products, setProducts] = useState<Products[]>([]);
   const [productName, setProductName] = useState<string>('');
   const [productPrice, setProductPrice] = useState<string>('');
-  const [name, setName] = useState<string>('');
+  const [, setName] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [filteredProducts, setFilteredProducts] = useState<Products[]>([]);
+  const [notFound, setNotFound] = useState<boolean>(false);
 
   const { toast } = useToast();
 
@@ -128,7 +129,9 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   };
 
   const handleChangeNome = (e: ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
+    const value = e.target.value;
+    setName(value);
+    handleFilterProducts(value);
   };
 
   const handlePriceChange = (e: any) => {
@@ -144,6 +147,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   const handleFilterProducts = async (name: string) => {
     if (!name) {
       setFilteredProducts([]);
+      setNotFound(false);
       return;
     }
   
@@ -155,9 +159,14 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       });
 
       if (filteredProducts.length === 0) {
-        toast({
-          description: "Produto não encontrado na base de dados"
-        });
+        if (!notFound) {
+          toast({
+            description: "Produto não encontrado na base de dados"
+          });
+          setNotFound(true);
+        }
+      } else {
+        setNotFound(false);
       }
 
       setFilteredProducts(filteredProducts);
@@ -189,12 +198,12 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   };
 
   const totalPages = Math.ceil(products.length / itemsPerPage);
-  const currentProducts = products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const currentProducts = filteredProducts.length > 0 ? filteredProducts : products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
-        <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); handleFilterProducts(name); }}>
+        <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault() }}>
           <Input type="name" placeholder="Nome do produto" onChange={handleChangeNome} />
           <Button type="submit" variant={"link"}>
             <Search className="w-4 h-4 mr-2" />
