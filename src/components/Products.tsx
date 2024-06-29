@@ -131,7 +131,9 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   const handleChangeNome = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setName(value);
-    handleFilterProducts(value);
+    setTimeout(() => {
+      handleFilterProducts(value);
+    }, 200);
   };
 
   const handlePriceChange = (e: any) => {
