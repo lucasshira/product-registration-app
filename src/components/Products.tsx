@@ -256,7 +256,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       <div className="border rounded-lg p-2">
       {(!products.length && !filteredProducts.length) ? (
           <div className="flex items-center justify-center h-12">
-            {userSub ? <Loading darkMode size={2} /> : <NenhumProduto />}
+            {userSub ? <h2>Carregando...</h2> : <NenhumProduto />}
           </div>
         ) : (
           <>
@@ -267,6 +267,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                   <TableHead>Produto</TableHead>
                   <TableHead>Preço</TableHead>
                   <TableHead>Data</TableHead>
+                  <TableHead> </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
