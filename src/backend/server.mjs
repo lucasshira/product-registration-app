@@ -12,6 +12,7 @@ import { MONGODB_USERNAME, MONGODB_PASSWORD } from '../../config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
+const PORT = 3000;
 
 const allowedOrigins = [
   'https://product-registration-app.onrender.com',
