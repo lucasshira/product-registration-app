@@ -83,7 +83,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     try {
       setIsLoading(true);
       const currentDate = getCurrentDayMonth();
-      const response = await axios.post("http://localhost:3000/api/products", { name: productName, price: parseFloat(productPrice), date: currentDate, sub: userSub });
+      const response = await axios.post("https://product-registration-app-api.onrender.com/api/products", { name: productName, price: parseFloat(productPrice), date: currentDate, sub: userSub });
 
       setProducts(prevProducts => {
         const updatedProducts = [...prevProducts, response.data];
@@ -104,14 +104,13 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       setIsModalOpen(false);
       setIsLoading(false);
     } catch (error) {
-      console.error('Erro ao criar o produto:', error);
       setIsLoading(false);
     }
   };
 
   const handleDeleteItem = async (productId: string) => {
     try {
-      await axios.delete(`http://localhost:3000/api/products?sub=${userSub}&productId=${productId}`);
+      await axios.delete(`https://product-registration-app-api.onrender.com/api/products?sub=${userSub}&productId=${productId}`);
   
       const updatedProducts = products.filter(product => product.productId !== productId);
       setProducts(updatedProducts);
@@ -124,7 +123,9 @@ const Products = ({ userSub }: { userSub: string | null }) => {
 
       if (currentPage <= 1) setCurrentPage(1);
     } catch (error) {
-      console.error('Erro ao excluir o produto:', error);
+      toast({
+        description: "Erro ao excluir o produto"
+      })
     }
   };
 
@@ -154,7 +155,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     }
   
     try {
-      const response = await axios.get(`http://localhost:3000/api/products?sub=${userSub}&name=${name}`);
+      const response = await axios.get(`https://product-registration-app-api.onrender.com/products?sub=${userSub}&name=${name}`);
   
       const filteredProducts = response.data.filter((product: any) => {
         return product.name.toLowerCase().includes(name.toLowerCase());
@@ -173,7 +174,9 @@ const Products = ({ userSub }: { userSub: string | null }) => {
 
       setFilteredProducts(filteredProducts);
     } catch (error) {
-      console.error('Erro ao filtrar os produtos: ', error);
+      toast({
+        description: "Erro inesperado ao filtrar produto"
+      });
     }
   };
 
@@ -181,12 +184,11 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     const fetchProducts = async () => {
       if (userSub) {
         try {
-          const response = await axios.get(`http://localhost:3000/api/products?sub=${userSub}`);
+          const response = await axios.get(`https://product-registration-app-api.onrender.com/api/products?sub=${userSub}`);
           const responseData: Products[] = response.data;
   
           setProducts(responseData);
         } catch (error) {
-          console.error('Erro ao buscar produtos:', error);
           toast({ description: 'Erro ao carregar produtos' });
         }
       }
@@ -276,7 +278,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                           <TableCell>{formattedPrice(product.price)}</TableCell>
                           <TableCell>{product.date}</TableCell>
                           <TableCell className="flex justify-end">
-                            <Trash2 className="cursor-pointer" onClick={() => handleDeleteItem(product.productId)} />
+                            <Trash2 className="cursor-pointer transform transition-transform duration-300 hover:scale-110" onClick={() => handleDeleteItem(product.productId)} />
                           </TableCell>
                         </TableRow>
                       ))
@@ -288,7 +290,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                           <TableCell>{formattedPrice(product.price)}</TableCell>
                           <TableCell>{product.date}</TableCell>
                           <TableCell className="flex justify-end">
-                            <Trash2 className="cursor-pointer justify-end" onClick={() => handleDeleteItem(product.productId)} />
+                            <Trash2 className="cursor-pointer transform transition-transform duration-300 hover:scale-110" onClick={() => handleDeleteItem(product.productId)} />
                           </TableCell>
                         </TableRow>
                       ))
