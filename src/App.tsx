@@ -42,11 +42,10 @@ export function App() {
   useEffect(() => {
     if (userSub) {
       localStorage.setItem('userSub', userSub);
-      window.location.reload();
     } else {
       localStorage.removeItem('userSub');
     }
-  }, [userSub]);
+  }, [setUserSub]);
 
   const toggleDarkMode = () => {
     const newMode = !isDarkMode;
