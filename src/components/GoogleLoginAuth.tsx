@@ -29,7 +29,7 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
       setIsLoggedIn(true);
       setUserSub(parsedUserInfo.sub);
     }
-  }, []);
+  }, [setUserSub]);
 
   useEffect(() => {
     if (isLoggedIn && userInfo) {
@@ -63,6 +63,7 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
         toast({
           description: "Erro ao criar/verificar usuário"
         });
+        setLoading(false);
       }
     },
   });
@@ -91,6 +92,7 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
       toast({
         description: "Erro ao criar/verificar usuário"
       });
+      setLoading(false);
     }
   };
 
