@@ -256,7 +256,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       <div className="border rounded-lg p-2">
       {(!products.length && !filteredProducts.length) ? (
           <div className="flex items-center justify-center h-12">
-            <NenhumProduto />
+            {userSub ? <Loading size={2} /> : <NenhumProduto />}
           </div>
         ) : (
           <>
