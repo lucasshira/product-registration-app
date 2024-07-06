@@ -56,6 +56,7 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
 
         setUserInfo({ given_name, family_name, picture, email, sub });
         setIsLoggedIn(true);
+        setUserSub(sub);
 
         await createUser({ given_name, family_name, picture, email, sub });
         setLoading(false);
