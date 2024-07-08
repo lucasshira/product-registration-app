@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button"
-import { toast } from "./ui/use-toast";
 import { useGoogleLogin, googleLogout } from '@react-oauth/google';
 
 interface UserInfo {
@@ -61,9 +60,7 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
         await createUser({ given_name, family_name, picture, email, sub });
         setLoading(false);
       } catch (err) {
-        toast({
-          description: "Erro ao criar/verificar usuário"
-        });
+        console.log(err);
         setLoading(false);
       }
     },
@@ -90,9 +87,7 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
         return response.data;
       }
     } catch (error) {
-      toast({
-        description: "Erro ao criar/verificar usuário"
-      });
+      console.log(error);
       setLoading(false);
     }
   };

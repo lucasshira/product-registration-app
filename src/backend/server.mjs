@@ -30,8 +30,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
 app.use(express.static(path.join(__dirname, '../App.tsx')));
+app.use(express.json());
 
 mongoose.connect(`mongodb+srv://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@productsdatabase.zooepn0.mongodb.net/?retryWrites=true&w=majority&appName=ProductsDataBase`, {
   useNewUrlParser: true,
@@ -58,8 +58,7 @@ const authenticateGetRequest = (req, res, next) => {
   next();
 }
 
-// authenticateGetRequest
-app.get('/api/users', async (req, res) => {
+app.get('/api/users', authenticateGetRequest, async (req, res) => {
   try {
     const users = await UserModel.find();
     res.status(200).json(users);
@@ -79,8 +78,7 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
-// authenticateGetRequest
-app.get('/api/products', async (req, res) => {
+app.get('/api/products', authenticateGetRequest, async (req, res) => {
   try {
     const { sub } = req.query;
 
