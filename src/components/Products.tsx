@@ -155,7 +155,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
     }
   
     try {
-      const response = await axios.get(`https://product-registration-app-api.onrender.com/products?sub=${userSub}&name=${name}`);
+      const response = await axios.get(`https://product-registration-app-api.onrender.com/api/products?sub=${userSub}&name=${name}`);
   
       const filteredProducts = response.data.filter((product: any) => {
         return product.name.toLowerCase().includes(name.toLowerCase());
