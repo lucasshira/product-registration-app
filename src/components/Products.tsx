@@ -34,6 +34,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [filteredProducts, setFilteredProducts] = useState<Products[]>([]);
   const [notFound, setNotFound] = useState<boolean>(false);
+  const [deletingProductId, setDeletingProductId] = useState<string | null>(null);
 
   const { toast } = useToast();
 
@@ -111,6 +112,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   const handleDeleteItem = async (productId: string) => {
     try {
       setIsLoading(true);
+      setDeletingProductId(productId);
       await axios.delete(`https://product-registration-app-api.onrender.com/api/products?sub=${userSub}&productId=${productId}`);
   
       const updatedProducts = products.filter(product => product.productId !== productId);
@@ -128,6 +130,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       toast({
         description: "Erro ao excluir o produto"
       })
+      setDeletingProductId(null);
       setIsLoading(false);
     }
   };
@@ -257,9 +260,13 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       </div>
 
       <div className="border rounded-lg p-2">
-      {(!products.length && !filteredProducts.length) ? (
+        {isLoading ? (
           <div className="flex items-center justify-center h-12">
-            {userSub ? <h2>Carregando produtos...</h2> : <NenhumProduto />}
+            <Loading size={2} />
+          </div>
+        ) : (!products.length && !filteredProducts.length) ? (
+          <div className="flex items-center justify-center h-12">
+            <NenhumProduto />
           </div>
         ) : (
           <>
@@ -282,7 +289,14 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                           <TableCell>{formattedPrice(product.price)}</TableCell>
                           <TableCell>{product.date}</TableCell>
                           <TableCell className="flex justify-end">
-                            {isLoading ? <Loading size={1} /> : <Trash2 className="cursor-pointer transform transition-transform duration-300 hover:scale-110" onClick={() => handleDeleteItem(product.productId)} />}
+                            {deletingProductId === product.productId ? (
+                              <Loading size={1} />
+                            ) : (
+                              <Trash2
+                                className="cursor-pointer transform transition-transform duration-300 hover:scale-110"
+                                onClick={() => handleDeleteItem(product.productId)}
+                              />
+                            )}
                           </TableCell>
                         </TableRow>
                       ))
@@ -294,7 +308,14 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                           <TableCell>{formattedPrice(product.price)}</TableCell>
                           <TableCell>{product.date}</TableCell>
                           <TableCell className="flex justify-end">
-                            {isLoading ? <Loading size={1} /> : <Trash2 className="cursor-pointer transform transition-transform duration-300 hover:scale-110" onClick={() => handleDeleteItem(product.productId)} />}
+                            {deletingProductId === product.productId ? (
+                              <Loading size={1} />
+                            ) : (
+                              <Trash2
+                                className="cursor-pointer transform transition-transform duration-300 hover:scale-110"
+                                onClick={() => handleDeleteItem(product.productId)}
+                              />
+                            )}
                           </TableCell>
                         </TableRow>
                       ))
