@@ -110,6 +110,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
 
   const handleDeleteItem = async (productId: string) => {
     try {
+      setIsLoading(true);
       await axios.delete(`https://product-registration-app-api.onrender.com/api/products?sub=${userSub}&productId=${productId}`);
   
       const updatedProducts = products.filter(product => product.productId !== productId);
@@ -122,10 +123,12 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       }
 
       if (currentPage <= 1) setCurrentPage(1);
+      setIsLoading(false);
     } catch (error) {
       toast({
         description: "Erro ao excluir o produto"
       })
+      setIsLoading(false);
     }
   };
 
@@ -256,7 +259,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       <div className="border rounded-lg p-2">
       {(!products.length && !filteredProducts.length) ? (
           <div className="flex items-center justify-center h-12">
-            {userSub ? <h2>Carregando...</h2> : <NenhumProduto />}
+            {userSub ? <h2>Carregando produtos...</h2> : <NenhumProduto />}
           </div>
         ) : (
           <>
@@ -279,7 +282,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                           <TableCell>{formattedPrice(product.price)}</TableCell>
                           <TableCell>{product.date}</TableCell>
                           <TableCell className="flex justify-end">
-                            <Trash2 className="cursor-pointer transform transition-transform duration-300 hover:scale-110" onClick={() => handleDeleteItem(product.productId)} />
+                            {isLoading ? <Loading size={1} /> : <Trash2 className="cursor-pointer transform transition-transform duration-300 hover:scale-110" onClick={() => handleDeleteItem(product.productId)} />}
                           </TableCell>
                         </TableRow>
                       ))
@@ -291,7 +294,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                           <TableCell>{formattedPrice(product.price)}</TableCell>
                           <TableCell>{product.date}</TableCell>
                           <TableCell className="flex justify-end">
-                            <Trash2 className="cursor-pointer transform transition-transform duration-300 hover:scale-110" onClick={() => handleDeleteItem(product.productId)} />
+                            {isLoading ? <Loading size={1} /> : <Trash2 className="cursor-pointer transform transition-transform duration-300 hover:scale-110" onClick={() => handleDeleteItem(product.productId)} />}
                           </TableCell>
                         </TableRow>
                       ))
