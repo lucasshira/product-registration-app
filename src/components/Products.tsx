@@ -35,6 +35,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   const [filteredProducts, setFilteredProducts] = useState<Products[]>([]);
   const [notFound, setNotFound] = useState<boolean>(false);
   const [deletingProductId, setDeletingProductId] = useState<string | null>(null);
+  const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const { toast } = useToast();
 
@@ -138,9 +139,16 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   const handleChangeNome = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setName(value);
-    setTimeout(() => {
+    
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+    
+    const newTimeout = setTimeout(() => {
       handleFilterProducts(value);
     }, 200);
+  
+    setDebounceTimeout(newTimeout);
   };
 
   const handlePriceChange = (e: any) => {
