@@ -3,7 +3,7 @@ import useAppData from './hook/useAppData';
 
 import GoogleLoginAuth from "./components/GoogleLoginAuth";
 import Products from "./components/Products";
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@/components/ui/separator";
 import NotLogged from './components/NotLogged';
 import Loading from './components/Loading';
 import DarkModeButton from './components/DarkModeButton';
@@ -11,10 +11,10 @@ import DarkModeButton from './components/DarkModeButton';
 export function App() {
   const [userSub, setUserSub] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
-  
+
   const { changeTheme } = useAppData();
-  
   const changeValidTheme = changeTheme ?? (() => {});
 
   useEffect(() => {
@@ -37,6 +37,7 @@ export function App() {
     if (savedUserSub !== null) {
       setUserSub(savedUserSub);
     }
+    setInitialLoading(false);
   }, []);
 
   useEffect(() => {
@@ -45,7 +46,7 @@ export function App() {
     } else {
       localStorage.removeItem('userSub');
     }
-  }, [setUserSub]);
+  }, [userSub]);
 
   const toggleDarkMode = () => {
     const newMode = !isDarkMode;
@@ -63,7 +64,7 @@ export function App() {
           <a href={'#'} className="text-4xl font-bold">Produtos</a>
         </div>
         <Separator />
-        {loading ? (
+        {initialLoading || loading ? (
           <Loading darkMode={isDarkMode ? false : true} size={2} />
         ) : (
           userSub ? <Products userSub={userSub} /> : <NotLogged />
