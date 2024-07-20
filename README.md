@@ -2,6 +2,8 @@
 
 This repository is for a web application that allows users to register and manage products.
 
+![Product Registration App](product%20registration%20app.PNG)
+
 ## Demo
 
 https://product-registration-app.onrender.com/
