@@ -15,6 +15,10 @@ https://product-registration-app.onrender.com/
 ## Technologies Used
 
 - React
-- TypeScript
+- Node.js
+- Express.js
 - Axios
+- TypeScript
+- Tailwind CSS
+- MongoDB
 - Google OAuth
