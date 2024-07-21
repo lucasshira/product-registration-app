@@ -12,7 +12,6 @@ import { MONGODB_USERNAME, MONGODB_PASSWORD } from '../../config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const PORT = 3000;
 
 const allowedOrigins = [
   'https://product-registration-app.onrender.com',
@@ -29,21 +28,21 @@ const corsOptions = {
   }
 };
 
+app.use(express.json());
 app.use(cors(corsOptions));
 app.use(express.static(path.join(__dirname, '../App.tsx')));
-app.use(express.json());
 
-mongoose.connect(`mongodb+srv://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@productsdatabase.zooepn0.mongodb.net/?retryWrites=true&w=majority&appName=ProductsDataBase`, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
-  console.log("Conectado ao MongoDB");
-}).catch(err => {
-  console.log("Erro ao se conectar ao MongoDB: ", err);
-  process.exit(1);
-});
-
-app.use(express.json());
+(async () => {
+  try {
+    await mongoose.connect(`mongodb+srv://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@productsdatabase.zooepn0.mongodb.net/?retryWrites=true&w=majority&appName=ProductsDataBase`, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+    console.log('DB Connected');
+  } catch (err) {
+    console.error(err);
+  }
+})();
 
 const authenticateGetRequest = (req, res, next) => {
   if (req.method === 'GET' && req.url.startsWith('/api')) {
@@ -68,13 +67,17 @@ app.get('/api/users', authenticateGetRequest, async (req, res) => {
 });
 
 app.post('/api/users', async (req, res) => {
+  const { given_name, family_name, email, picture, sub } = req.body;
   try {
-    const { given_name, family_name, email, picture, sub } = req.body;
+    const existingUser = await UserModel.findOne({ sub });
+    if (existingUser) {
+      return res.status(200).json(existingUser);
+    }
     const user = new UserModel({ given_name, family_name, email, picture, sub });
     await user.save();
     res.status(201).json(user);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: 'Erro ao criar usuário' });
   }
 });
 
@@ -135,6 +138,7 @@ app.delete('/api/products', async (req, res) => {
   }
 });
 
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });

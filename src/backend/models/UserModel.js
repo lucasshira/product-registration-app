@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   family_name: { type: String, default: '' },
   email: { type: String, required: true },
   picture: { type: String },
-  sub: { type: String, required: true }
+  sub: { type: String, required: true, index: true }
 });
 
 const User = mongoose.model('User', userSchema);
