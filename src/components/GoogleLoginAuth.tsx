@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import { useGoogleLogin, googleLogout } from '@react-oauth/google';
 
 interface UserInfo {
@@ -58,9 +58,9 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
         setUserSub(sub);
 
         await createUser({ given_name, family_name, picture, email, sub });
-        setLoading(false);
       } catch (err) {
         console.log(err);
+      } finally {
         setLoading(false);
       }
     },
@@ -68,27 +68,18 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
 
   const createUser = async (userInfo: UserInfo) => {
     try {
-      setLoading(true);
-      const emailExistsResponse = await axios.get("https://product-registration-app-api.onrender.com/api/users");
-      const existingUsers = emailExistsResponse.data;
-  
-      const existingUser = existingUsers.find((user: any) => user.sub === userInfo.sub);
-  
-      if (existingUser) {
-        setUserInfo(existingUser);
+      const { sub } = userInfo;
+      const response = await axios.get(`https://product-registration-app-api.onrender.com/api/users/${sub}`);
+      if (response.data) {
+        setUserInfo(response.data);
         setIsLoggedIn(true);
-        setUserSub(existingUser.sub); 
-        setLoading(false);
-        return existingUser;
+        setUserSub(response.data.sub); 
       } else {
-        const response = await axios.post("https://product-registration-app-api.onrender.com/api/users", userInfo);
-        setUserSub(response.data.sub);
-        setLoading(false);
-        return response.data;
+        const createResponse = await axios.post("https://product-registration-app-api.onrender.com/api/users", userInfo);
+        setUserSub(createResponse.data.sub);
       }
     } catch (error) {
       console.log(error);
-      setLoading(false);
     }
   };
 
@@ -107,7 +98,7 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
         <div className="flex items-center">
           <img src={userInfo.picture} alt="Profile" className="rounded-full size-8" />
           <p className="font-medium mx-2">{userInfo.given_name} {userInfo.family_name}</p>
-          <Button variant="secondary" onClick={() => logout()}>
+          <Button variant="secondary" onClick={logout}>
             Logout
           </Button>
         </div>
