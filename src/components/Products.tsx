@@ -25,13 +25,14 @@ interface Products {
   date: string;
 }
 
-const Products = ({ userSub, setLoading }: { userSub: string | null, setLoading: (loading: boolean) => void }) => {
+const Products = ({ userSub }: { userSub: string | null }) => {
   const [products, setProducts] = useState<Products[]>([]);
   const [productName, setProductName] = useState<string>('');
   const [productPrice, setProductPrice] = useState<string>('');
   const [, setName] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingProducts, setIsLoadingProducts] = useState<boolean>(false);
   const [filteredProducts, setFilteredProducts] = useState<Products[]>([]);
   const [notFound, setNotFound] = useState<boolean>(false);
   const [deletingProductId, setDeletingProductId] = useState<string | null>(null);
@@ -42,25 +43,6 @@ const Products = ({ userSub, setLoading }: { userSub: string | null, setLoading:
   // Pagination states
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage] = useState<number>(10);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      if (userSub) {
-        setLoading(true);
-        try {
-          const response = await axios.get(`https://product-registration-app-api.onrender.com/api/products?sub=${userSub}`);
-          const responseData: Products[] = response.data;
-          setProducts(responseData);
-        } catch (error) {
-          toast({ description: 'Erro ao carregar produtos' });
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-  
-    fetchProducts();
-  }, [userSub, toast, setLoading]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -213,6 +195,27 @@ const Products = ({ userSub, setLoading }: { userSub: string | null, setLoading:
     }
   };
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (userSub) {
+        try {
+          setIsLoadingProducts(true);
+          const response = await axios.get(`https://product-registration-app-api.onrender.com/api/products?sub=${userSub}`);
+          const responseData: Products[] = response.data;
+  
+          setProducts(responseData);
+        } catch (error) {
+          setIsLoadingProducts(false);
+          toast({ description: 'Erro ao carregar produtos' });
+        } finally {
+          setIsLoadingProducts(false);
+        }
+      }
+    };
+  
+    fetchProducts();
+  }, [userSub, toast]);
+
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
@@ -270,7 +273,7 @@ const Products = ({ userSub, setLoading }: { userSub: string | null, setLoading:
       </div>
 
       <div className="border rounded-lg p-2">
-        {isLoading ? (
+        {isLoadingProducts ? (
           <div className="flex items-center justify-center h-12">
             <Loading size={1} />
           </div>
