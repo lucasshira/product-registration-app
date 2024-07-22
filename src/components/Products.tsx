@@ -301,9 +301,11 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                           <TableCell>{product.name}</TableCell>
                           <TableCell>{formattedPrice(product.price)}</TableCell>
                           <TableCell>{product.date}</TableCell>
-                          <TableCell className="flex justify-end">
+                          <TableCell className="flex justify-end items-center relative">
                             {deletingProductId === product.productId ? (
-                              <Loading size={1} className="absolute right-0" />
+                              <div className="flex items-center justify-center w-6 h-6">
+                                <Loading size={1} />
+                              </div>
                             ) : (
                               <Trash2
                                 className="cursor-pointer transform transition-transform duration-300 hover:scale-110"
@@ -320,9 +322,11 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                           <TableCell>{product.name}</TableCell>
                           <TableCell>{formattedPrice(product.price)}</TableCell>
                           <TableCell>{product.date}</TableCell>
-                          <TableCell className="flex justify-end">
+                          <TableCell className="flex justify-end items-center relative">
                             {deletingProductId === product.productId ? (
-                              <Loading size={1} className="absolute right-0" />
+                              <div className="flex items-center justify-center w-6 h-6">
+                                <Loading size={1} />
+                              </div>
                             ) : (
                               <Trash2
                                 className="cursor-pointer transform transition-transform duration-300 hover:scale-110"
