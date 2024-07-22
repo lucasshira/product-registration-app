@@ -64,10 +64,20 @@ export function App() {
           <a href={'#'} className="text-4xl font-bold">Produtos</a>
         </div>
         <Separator />
-        {initialLoading || loading ? (
+        {initialLoading ? (
           <Loading darkMode={isDarkMode ? false : true} size={2} />
         ) : (
-          userSub ? <Products userSub={userSub} /> : <NotLogged />
+          userSub ? (
+            <div>
+              {loading ? (
+                <div className="text-center">Carregando produtos...</div>
+              ) : (
+                <Products userSub={userSub} setLoading={setLoading} />
+              )}
+            </div>
+          ) : (
+            <NotLogged />
+          )
         )}
       </div>
     </div>

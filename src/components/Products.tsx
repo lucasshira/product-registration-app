@@ -25,7 +25,7 @@ interface Products {
   date: string;
 }
 
-const Products = ({ userSub }: { userSub: string | null }) => {
+const Products = ({ userSub, setLoading }: { userSub: string | null, setLoading: (loading: boolean) => void }) => {
   const [products, setProducts] = useState<Products[]>([]);
   const [productName, setProductName] = useState<string>('');
   const [productPrice, setProductPrice] = useState<string>('');
@@ -42,6 +42,25 @@ const Products = ({ userSub }: { userSub: string | null }) => {
   // Pagination states
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage] = useState<number>(10);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (userSub) {
+        setLoading(true);
+        try {
+          const response = await axios.get(`https://product-registration-app-api.onrender.com/api/products?sub=${userSub}`);
+          const responseData: Products[] = response.data;
+          setProducts(responseData);
+        } catch (error) {
+          toast({ description: 'Erro ao carregar produtos' });
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+  
+    fetchProducts();
+  }, [userSub, toast, setLoading]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -193,23 +212,6 @@ const Products = ({ userSub }: { userSub: string | null }) => {
       });
     }
   };
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      if (userSub) {
-        try {
-          const response = await axios.get(`https://product-registration-app-api.onrender.com/api/products?sub=${userSub}`);
-          const responseData: Products[] = response.data;
-  
-          setProducts(responseData);
-        } catch (error) {
-          toast({ description: 'Erro ao carregar produtos' });
-        }
-      }
-    };
-  
-    fetchProducts();
-  }, [userSub, toast]);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
