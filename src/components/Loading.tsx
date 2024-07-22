@@ -1,6 +1,7 @@
 interface LoadingProps {
   size: number
   darkMode?: boolean
+  className?: string;
 }
 
 const Loading = (props: LoadingProps) => {

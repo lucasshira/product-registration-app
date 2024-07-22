@@ -303,7 +303,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                           <TableCell>{product.date}</TableCell>
                           <TableCell className="flex justify-end">
                             {deletingProductId === product.productId ? (
-                              <Loading size={1} />
+                              <Loading size={1} className="absolute right-0" />
                             ) : (
                               <Trash2
                                 className="cursor-pointer transform transition-transform duration-300 hover:scale-110"
@@ -322,7 +322,7 @@ const Products = ({ userSub }: { userSub: string | null }) => {
                           <TableCell>{product.date}</TableCell>
                           <TableCell className="flex justify-end">
                             {deletingProductId === product.productId ? (
-                              <Loading size={1} />
+                              <Loading size={1} className="absolute right-0" />
                             ) : (
                               <Trash2
                                 className="cursor-pointer transform transition-transform duration-300 hover:scale-110"
