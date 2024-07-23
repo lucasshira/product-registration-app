@@ -20,6 +20,7 @@ interface GoogleLoginAuthProps {
 const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [hasShownToast, setHasShownToast] = useState(false);
 
   const { toast } = useToast();
 
@@ -36,10 +37,16 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
   useEffect(() => {
     if (isLoggedIn && userInfo) {
       localStorage.setItem('userInfo', JSON.stringify(userInfo));
+      if (!hasShownToast) {
+        toast({
+          description: "Login bem-sucedido! Carregando seus produtos...",
+        });
+        setHasShownToast(true);
+      }
     } else {
       localStorage.removeItem('userInfo');
     }
-  }, [isLoggedIn, userInfo]);
+  }, [isLoggedIn, userInfo, hasShownToast, toast]);
 
   const login = useGoogleLogin({
     onSuccess: async (response) => {
@@ -61,10 +68,6 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
         setUserSub(sub);
 
         await createUser({ given_name, family_name, picture, email, sub });
-
-        toast({
-          description: "Login bem-sucedido! Carregando seus produtos...",
-        });
       } catch (err) {
         console.log(err);
       } finally {
@@ -96,6 +99,7 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
     setUserInfo(null);
     localStorage.removeItem('userInfo');
     setUserSub(null);
+    setHasShownToast(false);
     window.location.reload();
   }
 
