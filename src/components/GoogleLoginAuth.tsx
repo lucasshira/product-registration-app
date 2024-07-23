@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useGoogleLogin, googleLogout } from '@react-oauth/google';
+import { useToast } from "./ui/use-toast";
 
 interface UserInfo {
   given_name: string;
@@ -19,6 +20,8 @@ interface GoogleLoginAuthProps {
 const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+
+  const { toast } = useToast();
 
   useEffect(() => {
     const savedUserInfo = localStorage.getItem('userInfo');
@@ -58,6 +61,10 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
         setUserSub(sub);
 
         await createUser({ given_name, family_name, picture, email, sub });
+
+        toast({
+          description: "Login bem-sucedido! Carregando seus produtos...",
+        });
       } catch (err) {
         console.log(err);
       } finally {
