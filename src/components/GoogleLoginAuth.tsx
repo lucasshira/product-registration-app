@@ -55,7 +55,7 @@ const GoogleLoginAuth = () => {
       </Button>
     </div>
   ) : (
-    <Button variant="outline" onClick={() => googleLogin()}>
+    <Button variant="outline" onClick={() => googleLogin}>
       Sign in with Google 🚀
     </Button>
   );
