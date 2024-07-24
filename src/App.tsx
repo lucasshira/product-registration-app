@@ -11,7 +11,7 @@ import DarkModeButton from './components/DarkModeButton';
 export function App() {
   const { user, isLoading: authLoading } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
-  const [initialLoading] = useState<boolean>(true);
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
 
   const { changeTheme } = useAppData();
   const changeValidTheme = changeTheme ?? (() => {});
@@ -21,6 +21,7 @@ export function App() {
     if (savedMode !== null) {
       setIsDarkMode(JSON.parse(savedMode));
     }
+    setInitialLoading(false);
   }, []);
 
   useEffect(() => {
