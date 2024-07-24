@@ -27,7 +27,7 @@ const GoogleLoginAuth = () => {
 
         await createUser(userInfo);
         toast({
-          description: "Login bem-sucedido! Carregando seus produtos...",
+          description: `Bem vindo ${given_name}!`,
         });
       } catch (err) {
         console.log(err);
@@ -55,7 +55,7 @@ const GoogleLoginAuth = () => {
       </Button>
     </div>
   ) : (
-    <Button variant="outline" onClick={() => googleLogin}>
+    <Button variant="outline" onClick={() => googleLogin()}>
       Sign in with Google 🚀
     </Button>
   );
