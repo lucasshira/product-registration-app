@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import useAppData from './hook/useAppData';
-
+import { useAuth } from './context/AuthContext';
 import GoogleLoginAuth from "./components/GoogleLoginAuth";
 import Products from "./components/Products";
 import { Separator } from "@/components/ui/separator";
@@ -9,65 +8,37 @@ import Loading from './components/Loading';
 import DarkModeButton from './components/DarkModeButton';
 
 export function App() {
-  const [userSub, setUserSub] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [initialLoading, setInitialLoading] = useState<boolean>(true);
+  const { user, isLoading: authLoading } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
-
-  const { changeTheme } = useAppData();
-  const changeValidTheme = changeTheme ?? (() => {});
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const savedMode = localStorage.getItem('darkMode');
     if (savedMode !== null) {
       setIsDarkMode(JSON.parse(savedMode));
     }
-  }, []);
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.body.classList.remove('dark');
-    } else {
-      document.body.classList.add('dark');
-    }
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    const savedUserSub = localStorage.getItem('userSub');
-    if (savedUserSub !== null) {
-      setUserSub(savedUserSub);
-    }
     setInitialLoading(false);
   }, []);
-
-  useEffect(() => {
-    if (userSub) {
-      localStorage.setItem('userSub', userSub);
-    } else {
-      localStorage.removeItem('userSub');
-    }
-  }, [userSub]);
 
   const toggleDarkMode = () => {
     const newMode = !isDarkMode;
     setIsDarkMode(newMode);
     localStorage.setItem('darkMode', JSON.stringify(newMode));
-    changeValidTheme();
   };
 
   return (
     <div className="min-h-screen">
       <div className="p-6 max-w-4xl mx-auto space-y-4">
         <div className="flex flex-row-reverse justify-between items-center">
-          <GoogleLoginAuth setUserSub={setUserSub} setLoading={setLoading} />
+          <GoogleLoginAuth />
           <DarkModeButton theme={isDarkMode ? 'dark' : ''} changeTheme={toggleDarkMode} />
           <a href={'#'} className="text-4xl font-bold">Produtos</a>
         </div>
         <Separator />
-        {initialLoading || loading ? (
+        {initialLoading || authLoading ? (
           <Loading darkMode={isDarkMode ? false : true} size={2} />
         ) : (
-          userSub ? <Products userSub={userSub} /> : <NotLogged />
+          user ? <Products userSub={user.sub} /> : <NotLogged />
         )}
       </div>
     </div>

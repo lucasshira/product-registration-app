@@ -1,57 +1,16 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useGoogleLogin } from '@react-oauth/google';
+import { useAuth } from '../context/AuthContext';
 import { Button } from "@/components/ui/button";
-import { useGoogleLogin, googleLogout } from '@react-oauth/google';
 import { useToast } from "./ui/use-toast";
 
-interface UserInfo {
-  given_name: string;
-  family_name?: string;
-  email: string,
-  picture?: string;
-  sub: string;
-}
-
-interface GoogleLoginAuthProps {
-  setUserSub: (sub: string | null) => void;
-  setLoading: (loading: boolean) => void;
-}
-
-const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-  const [hasShownToast, setHasShownToast] = useState(false);
-
+const GoogleLoginAuth = () => {
+  const { user, login, logout } = useAuth();
   const { toast } = useToast();
 
-  useEffect(() => {
-    const savedUserInfo = localStorage.getItem('userInfo');
-    if (savedUserInfo) {
-      const parsedUserInfo = JSON.parse(savedUserInfo);
-      setUserInfo(parsedUserInfo);
-      setIsLoggedIn(true);
-      setUserSub(parsedUserInfo.sub);
-    }
-  }, [setUserSub]);
-
-  useEffect(() => {
-    if (isLoggedIn && userInfo) {
-      localStorage.setItem('userInfo', JSON.stringify(userInfo));
-      if (!hasShownToast) {
-        toast({
-          description: "Login bem-sucedido! Carregando seus produtos...",
-        });
-        setHasShownToast(true);
-      }
-    } else {
-      localStorage.removeItem('userInfo');
-    }
-  }, [isLoggedIn, userInfo, hasShownToast, toast]);
-
-  const login = useGoogleLogin({
+  const googleLogin = useGoogleLogin({
     onSuccess: async (response) => {
       try {
-        setLoading(true);
         const res = await axios.get(
           "https://www.googleapis.com/oauth2/v3/userinfo",
           {
@@ -63,65 +22,43 @@ const GoogleLoginAuth = ({ setUserSub, setLoading }: GoogleLoginAuthProps) => {
 
         const { given_name, family_name, picture, email, sub } = res.data;
 
-        setUserInfo({ given_name, family_name, picture, email, sub });
-        setIsLoggedIn(true);
-        setUserSub(sub);
+        const userInfo = { given_name, family_name, picture, email, sub };
+        login(userInfo);
 
-        await createUser({ given_name, family_name, picture, email, sub });
+        await createUser(userInfo);
+        toast({
+          description: "Login bem-sucedido! Carregando seus produtos...",
+        });
       } catch (err) {
         console.log(err);
-      } finally {
-        setLoading(false);
       }
     },
   });
 
-  const createUser = async (userInfo: UserInfo) => {
+  const createUser = async (userInfo: any) => {
     try {
-      const { sub } = userInfo;
-      const response = await axios.get(`https://product-registration-app-api.onrender.com/api/users/${sub}`);
-      if (response.data) {
-        setUserInfo(response.data);
-        setIsLoggedIn(true);
-        setUserSub(response.data.sub); 
-      } else {
-        const createResponse = await axios.post("https://product-registration-app-api.onrender.com/api/users", userInfo);
-        setUserSub(createResponse.data.sub);
+      const response = await axios.get(`https://product-registration-app-api.onrender.com/api/users/${userInfo.sub}`);
+      if (!response.data) {
+        await axios.post("https://product-registration-app-api.onrender.com/api/users", userInfo);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const logout = () => {
-    googleLogout();
-    setIsLoggedIn(false);
-    setUserInfo(null);
-    localStorage.removeItem('userInfo');
-    setUserSub(null);
-    setHasShownToast(false);
-    window.location.reload();
-  }
-
-  return (
-    <>
-      {isLoggedIn && userInfo ? (
-        <div className="flex items-center">
-          <img src={userInfo.picture} alt="Profile" className="rounded-full size-8" />
-          <p className="font-medium mx-2">{userInfo.given_name} {userInfo.family_name}</p>
-          <Button variant="secondary" onClick={logout}>
-            Logout
-          </Button>
-        </div>
-      ) : (
-        <div>
-          <Button variant="outline" onClick={() => login()}>
-            Sign in with Google 🚀
-          </Button>
-        </div>
-      )}
-    </>
+  return user ? (
+    <div className="flex items-center">
+      <img src={user.picture} alt="Profile" className="rounded-full size-8" />
+      <p className="font-medium mx-2">{user.given_name} {user.family_name}</p>
+      <Button variant="secondary" onClick={logout}>
+        Logout
+      </Button>
+    </div>
+  ) : (
+    <Button variant="outline" onClick={() => googleLogin()}>
+      Sign in with Google 🚀
+    </Button>
   );
-}
+};
 
 export default GoogleLoginAuth;
