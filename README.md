@@ -25,7 +25,7 @@ https://product-registration-app.onrender.com/
 - MongoDB
 - Google OAuth
 
-## Estrutura do diretório
+## Directory Structure
 
 ```
 product-registration-app/
