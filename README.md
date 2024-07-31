@@ -12,7 +12,7 @@ https://product-registration-app.onrender.com/
 
 - User authentication with Google Login
 - Dark mode support
-- Persistent user session and preferences using localStorage
+- Persistent user session and their preferences
 
 ## Technologies Used
 

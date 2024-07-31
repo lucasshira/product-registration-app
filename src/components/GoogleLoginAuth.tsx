@@ -2,11 +2,9 @@ import axios from "axios";
 import { useGoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { Button } from "@/components/ui/button";
-import { useToast } from "./ui/use-toast";
 
 const GoogleLoginAuth = () => {
   const { user, login, logout } = useAuth();
-  const { toast } = useToast();
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (response) => {
@@ -26,9 +24,6 @@ const GoogleLoginAuth = () => {
         login(userInfo);
 
         await createUser(userInfo);
-        toast({
-          description: `Bem vindo ${given_name}!`,
-        });
       } catch (err) {
         console.log(err);
       }

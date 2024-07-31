@@ -1,3 +1,4 @@
+import { toast } from '@/components/ui/use-toast';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface AuthContextProps {
@@ -22,7 +23,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('userInfo');
+    const savedUser = sessionStorage.getItem('userInfo');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
@@ -31,12 +32,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = (userInfo: UserInfo) => {
     setUser(userInfo);
-    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+    sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
+    toast({
+      description: 'Login realizado com sucesso, carregando produtos...',
+    });
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('userInfo');
+    sessionStorage.removeItem('userInfo');
+    toast({
+      description: 'Logout realizado com sucesso.',
+    });
   };
 
   return (
